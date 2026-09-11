@@ -73,7 +73,7 @@ const FooterComponent = {
               </ul>
             </div>
 
-            <!-- 5. Contact Information Placeholders (Clearly Marked) -->
+            <!-- 5. Contact Information -->
             <div>
               <h4 class="footer-column-title">Studio Contact</h4>
               <div class="footer-contact-list">
@@ -83,8 +83,8 @@ const FooterComponent = {
                     <circle cx="12" cy="10" r="3"/>
                   </svg>
                   <div>
-                    <span class="footer-contact-placeholder-tag">Placeholder Address</span>
-                    <div>Sabahz Trading Atelier, 124 Archival Way, Suite 400, New York, NY 10001</div>
+                    <span class="footer-contact-label">Address</span>
+                    <div>Shop 1 Gulshan Apartment, Kalwa, Thane west 400605</div>
                   </div>
                 </div>
 
@@ -93,8 +93,8 @@ const FooterComponent = {
                     <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
                   </svg>
                   <div>
-                    <span class="footer-contact-placeholder-tag">Placeholder Hotline</span>
-                    <div>+1 (800) 555-FLAIR / +1 (800) 555-3524</div>
+                    <span class="footer-contact-label">Phone</span>
+                    <div><a href="tel:+919769685801" style="color: inherit; text-decoration: none;">+91 9769685801</a></div>
                   </div>
                 </div>
 
@@ -104,8 +104,8 @@ const FooterComponent = {
                     <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
                   </svg>
                   <div>
-                    <span class="footer-contact-placeholder-tag">Placeholder Email</span>
-                    <div>support@artflair.sabahztrading.com</div>
+                    <span class="footer-contact-label">Email</span>
+                    <div><a href="mailto:info@artistparadise.in" style="color: inherit; text-decoration: none;">info@artistparadise.in</a></div>
                   </div>
                 </div>
 
@@ -115,7 +115,7 @@ const FooterComponent = {
                     <polyline points="12 6 12 12 16 14"/>
                   </svg>
                   <div>
-                    <span class="footer-contact-placeholder-tag">Placeholder Studio Hours</span>
+                    <span class="footer-contact-label">Studio Hours</span>
                     <div>Mon – Fri: 8:00 AM – 6:00 PM EST</div>
                   </div>
                 </div>

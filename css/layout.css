@@ -764,15 +764,18 @@
   margin-top: 2px;
 }
 
+.footer-contact-label,
 .footer-contact-placeholder-tag {
   display: inline-block;
   font-size: 0.65rem;
-  background: rgba(201, 107, 75, 0.25);
+  background: rgba(201, 107, 75, 0.18);
   color: var(--color-secondary-light);
-  padding: 1px 6px;
+  padding: 2px 7px;
   border-radius: 4px;
   font-weight: 700;
-  margin-bottom: 2px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 3px;
 }
 
 .footer-bottom {
