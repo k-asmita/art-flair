@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Studio Orders & Dispatch History | Art Flair - Sabahz Trading</title>
+  <meta name="description" content="View and track your fine art supplies orders, priority packaging, and Sabahz Trading dispatch records." />
+
+  <!-- Preconnect to Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,400&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+
+  <!-- Core Design System CSS -->
+  <link rel="stylesheet" href="css/variables.css" />
+  <link rel="stylesheet" href="css/base.css" />
+  <link rel="stylesheet" href="css/components.css" />
+  <link rel="stylesheet" href="css/layout.css" />
+  <link rel="stylesheet" href="css/pages/profile-orders.css" />
+</head>
+<body>
+  <!-- Dynamic Header injected via js/components/header.js -->
+  <div id="site-header-container"></div>
+
+  <main class="profile-page-wrapper" id="main-content">
+    <div class="container">
+      <!-- Breadcrumb Navigation -->
+      <nav class="breadcrumb" aria-label="Breadcrumb">
+        <a href="index.html">Home</a>
+        <span class="breadcrumb-separator">/</span>
+        <a href="profile.html">Atelier Account</a>
+        <span class="breadcrumb-separator">/</span>
+        <span class="breadcrumb-current">Studio Orders</span>
+      </nav>
+
+      <div class="profile-layout">
+        <!-- Sidebar Navigation -->
+        <aside class="profile-sidebar-card">
+          <div class="profile-avatar-large" id="sidebar-user-avatar">🎨</div>
+          <h2 class="profile-name" id="sidebar-user-name">Artist Patron</h2>
+          <div class="profile-email" id="sidebar-user-email">Loading account...</div>
+          <div class="profile-tier-badge">Sabahz Atelier Patron</div>
+
+          <nav class="profile-nav-menu" aria-label="Account Navigation">
+            <a href="orders.html" class="profile-nav-btn active">
+              <span>📦</span>
+              <span>Studio Orders & History</span>
+            </a>
+            <a href="profile.html" class="profile-nav-btn">
+              <span>👤</span>
+              <span>Account & Atelier Details</span>
+            </a>
+            <a href="wishlist.html" class="profile-nav-btn">
+              <span>❤️</span>
+              <span>Saved Wishlist</span>
+            </a>
+            <a href="cart.html" class="profile-nav-btn">
+              <span>🛒</span>
+              <span>Active Studio Cart</span>
+            </a>
+            <button type="button" class="profile-nav-btn" id="btn-sidebar-logout" style="color: var(--error); width: 100%; border: none; background: transparent; cursor: pointer;">
+              <span>🚪</span>
+              <span>Sign Out of Studio</span>
+            </button>
+          </nav>
+        </aside>
+
+        <!-- Main Orders List Column -->
+        <div>
+          <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 24px; flex-wrap: wrap; gap: 12px;">
+            <div>
+              <div class="section-kicker" style="background: var(--powder-blue-soft); color: var(--primary);">
+                🚚 Sabahz Priority Logistics
+              </div>
+              <h1 style="color: var(--primary); margin-bottom: 4px;">Studio Orders & Dispatch</h1>
+              <p style="color: var(--text-secondary); margin-bottom: 0;">
+                Track climate-protected deliveries, review pigment invoices, and access archival receipts.
+              </p>
+            </div>
+
+            <div style="display: flex; gap: 8px;">
+              <select id="orders-status-filter" class="form-control form-select" style="min-width: 160px; font-size: 0.85rem;" aria-label="Filter orders by status">
+                <option value="all">All Orders</option>
+                <option value="Confirmed">Confirmed</option>
+                <option value="Processing">Processing</option>
+                <option value="Shipped">Shipped</option>
+                <option value="Delivered">Delivered</option>
+                <option value="Cancelled">Cancelled</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Dynamic Orders Container -->
+          <div id="orders-view-container">
+            <!-- Loading Skeletons -->
+            <div class="skeleton" style="height: 220px; border-radius: var(--radius-xl); margin-bottom: 20px;"></div>
+            <div class="skeleton" style="height: 220px; border-radius: var(--radius-xl);"></div>
+          </div>
+
+          <!-- Studio AI Recommendations for Order History -->
+          <div id="orders-recommendations-container" style="margin-top: 36px;"></div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Dynamic Footer injected via js/components/footer.js -->
+  <div id="site-footer-container"></div>
+
+  <!-- Global Application Scripts -->
+  <script src="js/config.js"></script>
+  <script src="js/storage.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/services/authService.js"></script>
+  <script src="js/services/productService.js"></script>
+  <script src="js/services/cartService.js"></script>
+  <script src="js/services/wishlistService.js"></script>
+  <script src="js/services/aiService.js"></script>
+  <script src="js/search.js"></script>
+  <script src="js/recommendations.js"></script>
+  <script src="js/components/toast.js"></script>
+  <script src="js/components/modal.js"></script>
+  <script src="js/components/product-card.js"></script>
+    <script src="js/components/cart-drawer.js"></script>
+  <script src="js/components/header.js"></script>
+  <script src="js/components/footer.js"></script>
+  <script src="js/pages/orders.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>

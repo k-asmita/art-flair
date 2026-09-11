@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Atelier Profile & Preferences | Art Flair - Sabahz Trading</title>
+  <meta name="description" content="Manage your Art Flair studio patron profile, primary delivery addresses, and fine art preferences." />
+
+  <!-- Preconnect to Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,400&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+
+  <!-- Core Design System CSS -->
+  <link rel="stylesheet" href="css/variables.css" />
+  <link rel="stylesheet" href="css/base.css" />
+  <link rel="stylesheet" href="css/components.css" />
+  <link rel="stylesheet" href="css/layout.css" />
+  <link rel="stylesheet" href="css/pages/profile-orders.css" />
+</head>
+<body>
+  <!-- Dynamic Header injected via js/components/header.js -->
+  <div id="site-header-container"></div>
+
+  <main class="profile-page-wrapper" id="main-content">
+    <div class="container">
+      <!-- Breadcrumb Navigation -->
+      <nav class="breadcrumb" aria-label="Breadcrumb">
+        <a href="index.html">Home</a>
+        <span class="breadcrumb-separator">/</span>
+        <span class="breadcrumb-current">Atelier Profile Settings</span>
+      </nav>
+
+      <div class="profile-layout">
+        <!-- Sidebar Navigation -->
+        <aside class="profile-sidebar-card">
+          <div class="profile-avatar-large" id="sidebar-user-avatar">🎨</div>
+          <h2 class="profile-name" id="sidebar-user-name">Artist Patron</h2>
+          <div class="profile-email" id="sidebar-user-email">Loading account...</div>
+          <div class="profile-tier-badge" id="sidebar-user-tier">Sabahz Atelier Patron</div>
+
+          <nav class="profile-nav-menu" aria-label="Account Navigation">
+            <a href="profile.html" class="profile-nav-btn active">
+              <span>👤</span>
+              <span>Account & Atelier Details</span>
+            </a>
+            <a href="orders.html" class="profile-nav-btn">
+              <span>📦</span>
+              <span>Studio Orders & History</span>
+            </a>
+            <a href="wishlist.html" class="profile-nav-btn">
+              <span>❤️</span>
+              <span>Saved Wishlist</span>
+            </a>
+            <a href="cart.html" class="profile-nav-btn">
+              <span>🛒</span>
+              <span>Active Studio Cart</span>
+            </a>
+            <button type="button" class="profile-nav-btn" id="btn-sidebar-logout" style="color: var(--error); width: 100%; border: none; background: transparent; cursor: pointer;">
+              <span>🚪</span>
+              <span>Sign Out of Studio</span>
+            </button>
+          </nav>
+        </aside>
+
+        <!-- Main Profile Form Column -->
+        <div>
+          <div style="margin-bottom: 24px;">
+            <div class="section-kicker" style="background: var(--powder-blue-soft); color: var(--primary);">
+              ✨ Atelier Patron Credentials
+            </div>
+            <h1 style="color: var(--primary); margin-bottom: 4px;">Atelier Profile & Settings</h1>
+            <p style="color: var(--text-secondary); margin-bottom: 0;">
+              Update your contact credentials, primary studio shipping destination, and artistic medium preferences.
+            </p>
+          </div>
+
+          <form id="profile-form">
+            <!-- 1. Contact & Identity -->
+            <section class="profile-card" aria-label="Personal Information">
+              <div class="profile-card-header">
+                <h2 class="profile-card-title">Artist Information</h2>
+                <div style="font-size: 0.85rem; color: var(--text-secondary);">Your primary studio contact details for Sabahz Trading orders.</div>
+              </div>
+
+              <div class="grid grid-cols-2 gap-md">
+                <div class="form-group">
+                  <label class="form-label" for="profile-name-input">Full Name <span class="required">*</span></label>
+                  <input type="text" id="profile-name-input" class="form-control" required placeholder="Aarav Sharma" />
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label" for="profile-email-input">Studio Email Address <span class="required">*</span></label>
+                  <input type="email" id="profile-email-input" class="form-control" required placeholder="aarav.art@studio.com" />
+                </div>
+              </div>
+
+              <div class="grid grid-cols-2 gap-md">
+                <div class="form-group" style="margin-bottom: 0;">
+                  <label class="form-label" for="profile-phone-input">Phone Number</label>
+                  <input type="tel" id="profile-phone-input" class="form-control" placeholder="+91 98765 43210" />
+                </div>
+
+                <div class="form-group" style="margin-bottom: 0;">
+                  <label class="form-label" for="profile-discipline-input">Primary Creative Discipline</label>
+                  <input type="text" id="profile-discipline-input" class="form-control" placeholder="Oil Realism, Watercolors, Mixed Media" />
+                </div>
+              </div>
+            </section>
+
+            <!-- 2. Primary Shipping Address -->
+            <section class="profile-card" aria-label="Shipping Address">
+              <div class="profile-card-header">
+                <h2 class="profile-card-title">Primary Atelier Delivery Address</h2>
+                <div style="font-size: 0.85rem; color: var(--text-secondary);">Default shipping destination for seamless one-click order dispatches.</div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="profile-address-input">Street Address / Studio Building</label>
+                <input type="text" id="profile-address-input" class="form-control" placeholder="Lotus Fine Arts Studio, 402 MG Road" />
+              </div>
+
+              <div class="grid grid-cols-2 gap-md">
+                <div class="form-group">
+                  <label class="form-label" for="profile-city-input">City</label>
+                  <input type="text" id="profile-city-input" class="form-control" placeholder="Mumbai" />
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label" for="profile-state-input">State / Province</label>
+                  <input type="text" id="profile-state-input" class="form-control" placeholder="Maharashtra" />
+                </div>
+              </div>
+
+              <div class="grid grid-cols-2 gap-md" style="margin-bottom: 0;">
+                <div class="form-group" style="margin-bottom: 0;">
+                  <label class="form-label" for="profile-postal-input">PIN / Postal Code</label>
+                  <input type="text" id="profile-postal-input" class="form-control" placeholder="400001" maxlength="6" />
+                </div>
+
+                <div class="form-group" style="margin-bottom: 0;">
+                  <label class="form-label" for="profile-country-input">Country</label>
+                  <input type="text" id="profile-country-input" class="form-control" value="India" readonly style="background: var(--bg-alt);" />
+                </div>
+              </div>
+            </section>
+
+            <!-- Submit Action -->
+            <div style="display: flex; justify-content: flex-end; gap: 12px;">
+              <button type="submit" class="btn btn-primary btn-lg" id="btn-save-profile">
+                Save Studio Profile Changes
+              </button>
+            </div>
+          </form>
+
+          <!-- Dashboard AI Recommendations -->
+          <div id="profile-recommendations-container" style="margin-top: 36px;"></div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Dynamic Footer injected via js/components/footer.js -->
+  <div id="site-footer-container"></div>
+
+  <!-- Global Application Scripts -->
+  <script src="js/config.js"></script>
+  <script src="js/storage.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/services/authService.js"></script>
+  <script src="js/services/productService.js"></script>
+  <script src="js/services/cartService.js"></script>
+  <script src="js/services/wishlistService.js"></script>
+  <script src="js/services/aiService.js"></script>
+  <script src="js/search.js"></script>
+  <script src="js/recommendations.js"></script>
+  <script src="js/components/toast.js"></script>
+  <script src="js/components/modal.js"></script>
+  <script src="js/components/product-card.js"></script>
+    <script src="js/components/cart-drawer.js"></script>
+  <script src="js/components/header.js"></script>
+  <script src="js/components/footer.js"></script>
+  <script src="js/pages/profile.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Studio Wishlist | Art Flair - Sabahz Trading</title>
+  <meta name="description" content="View and manage your curated fine art supplies, single pigments, and archival surfaces on Art Flair." />
+
+  <!-- Preconnect to Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,400&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+
+  <!-- Core Design System CSS -->
+  <link rel="stylesheet" href="css/variables.css" />
+  <link rel="stylesheet" href="css/base.css" />
+  <link rel="stylesheet" href="css/components.css" />
+  <link rel="stylesheet" href="css/layout.css" />
+  <link rel="stylesheet" href="css/pages/wishlist.css" />
+</head>
+<body>
+  <!-- Dynamic Header injected via js/components/header.js -->
+  <div id="site-header-container"></div>
+
+  <!-- Main Content Area -->
+  <main class="wishlist-page-container" id="main-content">
+    <div class="container">
+      <!-- Breadcrumb Navigation -->
+      <nav class="breadcrumb" aria-label="Breadcrumb">
+        <a href="index.html">Home</a>
+        <span class="breadcrumb-separator">/</span>
+        <a href="shop.html">Shop</a>
+        <span class="breadcrumb-separator">/</span>
+        <span class="breadcrumb-current">Studio Wishlist</span>
+      </nav>
+
+      <!-- Wishlist Header Bar -->
+      <div class="wishlist-header-bar">
+        <div class="wishlist-header-info">
+          <div class="section-kicker" style="background: var(--powder-blue-soft); color: var(--primary);">
+            ✨ Saved Archival Materials
+          </div>
+          <h1>My Studio Wishlist</h1>
+          <p style="color: var(--text-secondary); margin-bottom: 0;">
+            Saved paints, brushes, and surfaces ready for direct transfer to your studio order.
+          </p>
+        </div>
+
+        <div>
+          <span class="wishlist-count-badge" id="wishlist-total-count">
+            Loading...
+          </span>
+        </div>
+      </div>
+
+      <!-- Wishlist Content Area (Populated dynamically via WishlistPage.renderWishlist()) -->
+      <div id="wishlist-view-container">
+        <!-- Initial shimmer placeholder -->
+        <div class="wishlist-grid">
+          <div class="skeleton" style="height: 380px; border-radius: var(--radius-lg);"></div>
+          <div class="skeleton" style="height: 380px; border-radius: var(--radius-lg);"></div>
+          <div class="skeleton" style="height: 380px; border-radius: var(--radius-lg);"></div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Dynamic Footer injected via js/components/footer.js -->
+  <div id="site-footer-container"></div>
+
+  <!-- Global Application Scripts -->
+  <script src="js/config.js"></script>
+  <script src="js/storage.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/services/authService.js"></script>
+  <script src="js/services/productService.js"></script>
+  <script src="js/services/cartService.js"></script>
+  <script src="js/services/wishlistService.js"></script>
+  <script src="js/services/aiService.js"></script>
+  <script src="js/search.js"></script>
+  <script src="js/recommendations.js"></script>
+  <script src="js/components/toast.js"></script>
+  <script src="js/components/modal.js"></script>
+  <script src="js/components/product-card.js"></script>
+    <script src="js/components/cart-drawer.js"></script>
+  <script src="js/components/header.js"></script>
+  <script src="js/components/footer.js"></script>
+  <script src="js/pages/wishlist.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>

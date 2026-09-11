@@ -1,0 +1,165 @@
+/**
+ * Art Flair - Global Frontend Design System Variables
+ * Developed for Sabahz Trading
+ * 
+ * EXACT ART FLAIR BRAND PALETTE & DISTRIBUTION:
+ * 60% Warm Cream: #FFF9EF
+ * 20% Midnight Navy: #17233D
+ * 10% Vibrant Coral: #F0645A
+ *  5% Powder Blue: #BFDDF2
+ *  5% Butter Yellow: #F5C84C
+ * Ink Black: #171717
+ */
+
+:root {
+  /* ==========================================================================
+     EXACT ART FLAIR PALETTE
+     ========================================================================== */
+  --primary: #5B2C6F;          /* Royal Plum / Deep Purple */
+  --secondary: #C96B4B;        /* Terracotta */
+  --accent: #E9B949;           /* Warm Golden Amber */
+  --background: #FFF8F0;       /* Warm Cream */
+  --card: #FFFFFF;             /* Crisp White for Cards */
+  --text: #292524;             /* Main Text (Deep Stone Charcoal) */
+  --text-secondary: #78716C;   /* Secondary Text (Muted Warm Stone) */
+  --success: #6B8E71;          /* Sage Green */
+  --error: #C94C4C;            /* Muted Crimson Alert Red */
+
+  /* Compatibility & Derived Palette Tokens */
+  --primary-dark: #472157;
+  --primary-light: #74348E;
+  --primary-soft: rgba(91, 44, 111, 0.08);
+  --primary-glow: rgba(91, 44, 111, 0.22);
+
+  --secondary-dark: #B55839;
+  --secondary-light: #DF8467;
+  --secondary-soft: rgba(201, 107, 75, 0.12);
+  --secondary-glow: rgba(201, 107, 75, 0.25);
+
+  --accent-dark: #D4A333;
+  --accent-soft: rgba(233, 185, 73, 0.22);
+
+  --powder-blue: #BFDDF2;
+  --powder-blue-dark: #92C0E2;
+  --powder-blue-soft: rgba(191, 221, 242, 0.35);
+
+  --bg-alt: #F7EFE1;           /* Warm cream depth for alternating sections */
+  --bg-muted: #EFE4D2;
+
+  --text-muted: #8C867E;
+  --text-inverse: #FFFFFF;
+
+  --success-dark: #537258;
+  --success-soft: rgba(107, 142, 113, 0.15);
+
+  --error-dark: #A93838;
+  --error-soft: rgba(201, 76, 76, 0.15);
+
+  --border: #E8DDCE;
+  --border-light: #F3EAE0;
+  --border-focus: var(--primary);
+
+  /* Dual aliases for universal CSS referencing */
+  --color-primary: var(--primary);
+  --color-secondary: var(--secondary);
+  --color-accent: var(--accent);
+  --color-powder-blue: var(--powder-blue);
+  --color-bg: var(--background);
+  --color-card: var(--card);
+  --color-text-main: var(--text);
+  --color-text-secondary: var(--text-secondary);
+  --color-success: var(--success);
+  --color-error: var(--error);
+  --color-border: var(--border);
+  --color-border-light: var(--border-light);
+  --color-bg-alt: var(--bg-alt);
+  --color-primary-soft: var(--primary-soft);
+  --color-primary-glow: var(--primary-glow);
+  --color-secondary-soft: var(--secondary-soft);
+  --color-accent-soft: var(--accent-soft);
+  --color-powder-blue-soft: var(--powder-blue-soft);
+  --color-text-inverse: var(--text-inverse);
+  --color-text-muted: var(--text-muted);
+  --color-success-dark: var(--success-dark);
+  --color-success-soft: var(--success-soft);
+  --color-error-soft: var(--error-soft);
+
+  /* ==========================================================================
+     TYPOGRAPHY SCALE & TOKENS
+     ========================================================================== */
+  --font-heading: 'Playfair Display', Georgia, 'Times New Roman', serif;
+  --font-body: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+
+  --font-size-xs: 0.75rem;    /* 12px */
+  --font-size-sm: 0.875rem;   /* 14px */
+  --font-size-base: 1rem;     /* 16px */
+  --font-size-md: 1.125rem;   /* 18px */
+  --font-size-lg: 1.25rem;    /* 20px */
+  --font-size-xl: 1.5rem;     /* 24px */
+  --font-size-2xl: 1.875rem;  /* 30px */
+  --font-size-3xl: 2.25rem;   /* 36px */
+  --font-size-4xl: 3rem;      /* 48px */
+  --font-size-5xl: 3.75rem;   /* 60px */
+
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+  --font-weight-extrabold: 800;
+
+  /* ==========================================================================
+     SPACING & LAYOUT SYSTEM
+     ========================================================================== */
+  --space-2xs: 0.25rem;  /* 4px */
+  --space-xs: 0.5rem;    /* 8px */
+  --space-sm: 0.75rem;   /* 12px */
+  --space-md: 1rem;      /* 16px */
+  --space-lg: 1.5rem;    /* 24px */
+  --space-xl: 2rem;      /* 32px */
+  --space-2xl: 3rem;     /* 48px */
+  --space-3xl: 4rem;     /* 64px */
+  --space-4xl: 6rem;     /* 96px */
+
+  --container-max-width: 1280px;
+  --container-narrow-width: 960px;
+  --header-height: 76px;
+
+  /* ==========================================================================
+     SHADOWS & ELEVATION
+     ========================================================================== */
+  --shadow-xs: 0 1px 2px rgba(23, 35, 61, 0.04);
+  --shadow-sm: 0 2px 6px rgba(23, 35, 61, 0.06);
+  --shadow-md: 0 6px 18px rgba(23, 35, 61, 0.08);
+  --shadow-lg: 0 12px 32px rgba(23, 35, 61, 0.1);
+  --shadow-xl: 0 20px 48px rgba(23, 35, 61, 0.16);
+  --shadow-navy: 0 8px 24px rgba(23, 35, 61, 0.2);
+  --shadow-coral: 0 8px 24px rgba(240, 100, 90, 0.26);
+
+  /* ==========================================================================
+     BORDER RADII
+     ========================================================================== */
+  --radius-xs: 4px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  --radius-full: 9999px;
+
+  /* ==========================================================================
+     TRANSITIONS
+     ========================================================================== */
+  --transition-fast: 0.15s ease;
+  --transition-base: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow: 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* ==========================================================================
+     Z-INDEX SYSTEM
+     ========================================================================== */
+  --z-base: 1;
+  --z-sticky: 100;
+  --z-drawer: 500;
+  --z-modal-backdrop: 900;
+  --z-modal: 1000;
+  --z-toast: 1100;
+}

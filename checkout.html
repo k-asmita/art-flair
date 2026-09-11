@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Secure Studio Checkout | Art Flair - Sabahz Trading</title>
+  <meta name="description" content="Complete your fine art supplies purchase with Sabahz Trading secure atelier checkout and priority delivery." />
+
+  <!-- Preconnect to Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,400&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+
+  <!-- Core Design System CSS -->
+  <link rel="stylesheet" href="css/variables.css" />
+  <link rel="stylesheet" href="css/base.css" />
+  <link rel="stylesheet" href="css/components.css" />
+  <link rel="stylesheet" href="css/layout.css" />
+  <link rel="stylesheet" href="css/pages/cart-checkout.css" />
+</head>
+<body>
+  <!-- Dynamic Header injected via js/components/header.js -->
+  <div id="site-header-container"></div>
+
+  <main class="main-content section-padding" id="main-content">
+    <div class="container">
+      <!-- Breadcrumb Navigation -->
+      <nav class="breadcrumb" aria-label="Breadcrumb">
+        <a href="index.html">Home</a>
+        <span class="breadcrumb-separator">/</span>
+        <a href="cart.html">Studio Cart</a>
+        <span class="breadcrumb-separator">/</span>
+        <span class="breadcrumb-current">Secure Checkout</span>
+      </nav>
+
+      <div style="margin-bottom: 28px;">
+        <div class="section-kicker" style="background: var(--powder-blue-soft); color: var(--primary);">
+          🔒 Sabahz Trading 256-Bit Encrypted Gateway
+        </div>
+        <h1 style="margin-bottom: 4px; color: var(--primary);">Studio Order Checkout</h1>
+        <p style="margin-bottom: 0; color: var(--text-secondary);">
+          Provide delivery specifications and payment details for verified dispatch of archival materials.
+        </p>
+      </div>
+
+      <!-- Checkout Layout: Form + Authoritative Sidebar -->
+      <div class="checkout-layout">
+        <!-- Main Form Column -->
+        <div>
+          <form id="checkout-form" novalidate>
+            <!-- Step 1: Customer Information -->
+            <section class="checkout-step-card" aria-label="Customer Information">
+              <div class="step-header">
+                <div class="step-number">1</div>
+                <h2 class="step-title">Artist & Contact Information</h2>
+              </div>
+
+              <div class="grid grid-cols-2 gap-md">
+                <div class="form-group">
+                  <label class="form-label" for="first-name">First Name <span class="required">*</span></label>
+                  <input type="text" id="first-name" class="form-control" required placeholder="Aarav" />
+                  <div class="form-error-msg" id="err-first-name" style="display: none; color: var(--error); font-size: 0.75rem; margin-top: 4px;">Please enter your first name.</div>
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="last-name">Last Name <span class="required">*</span></label>
+                  <input type="text" id="last-name" class="form-control" required placeholder="Sharma" />
+                  <div class="form-error-msg" id="err-last-name" style="display: none; color: var(--error); font-size: 0.75rem; margin-top: 4px;">Please enter your last name.</div>
+                </div>
+              </div>
+
+              <div class="grid grid-cols-2 gap-md">
+                <div class="form-group">
+                  <label class="form-label" for="email">Studio Email <span class="required">*</span></label>
+                  <input type="email" id="email" class="form-control" required placeholder="aarav.art@studio.com" />
+                  <div class="form-error-msg" id="err-email" style="display: none; color: var(--error); font-size: 0.75rem; margin-top: 4px;">Please provide a valid email address.</div>
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="phone">Phone Number <span class="required">*</span></label>
+                  <input type="tel" id="phone" class="form-control" required placeholder="+91 98765 43210" />
+                  <div class="form-error-msg" id="err-phone" style="display: none; color: var(--error); font-size: 0.75rem; margin-top: 4px;">Please enter a valid 10-digit phone number.</div>
+                </div>
+              </div>
+            </section>
+
+            <!-- Step 2: Shipping Destination -->
+            <section class="checkout-step-card" aria-label="Shipping Address">
+              <div class="step-header">
+                <div class="step-number">2</div>
+                <h2 class="step-title">Studio Delivery Address</h2>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="address">Street Address / Atelier Building <span class="required">*</span></label>
+                <input type="text" id="address" class="form-control" required placeholder="Flat 402, Lotus Fine Arts Studio, MG Road" />
+                <div class="form-error-msg" id="err-address" style="display: none; color: var(--error); font-size: 0.75rem; margin-top: 4px;">Please enter your delivery street address.</div>
+              </div>
+
+              <div class="grid grid-cols-2 gap-md">
+                <div class="form-group">
+                  <label class="form-label" for="city">City <span class="required">*</span></label>
+                  <input type="text" id="city" class="form-control" required placeholder="Mumbai" />
+                  <div class="form-error-msg" id="err-city" style="display: none; color: var(--error); font-size: 0.75rem; margin-top: 4px;">Please enter your city.</div>
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="state">State / Province <span class="required">*</span></label>
+                  <input type="text" id="state" class="form-control" required placeholder="Maharashtra" />
+                  <div class="form-error-msg" id="err-state" style="display: none; color: var(--error); font-size: 0.75rem; margin-top: 4px;">Please enter your state.</div>
+                </div>
+              </div>
+
+              <div class="grid grid-cols-2 gap-md">
+                <div class="form-group">
+                  <label class="form-label" for="postal-code">PIN / Postal Code <span class="required">*</span></label>
+                  <input type="text" id="postal-code" class="form-control" required placeholder="400001" maxlength="6" />
+                  <div class="form-error-msg" id="err-postal-code" style="display: none; color: var(--error); font-size: 0.75rem; margin-top: 4px;">Please enter a valid 6-digit postal PIN code.</div>
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="country">Country</label>
+                  <input type="text" id="country" class="form-control" value="India" readonly style="background: var(--bg-alt); cursor: not-allowed;" />
+                </div>
+              </div>
+
+              <div class="form-group" style="margin-bottom: 0;">
+                <label class="form-label" for="shipping-notes">Delivery Instructions / Handling Notes (Optional)</label>
+                <textarea id="shipping-notes" class="form-control" rows="2" placeholder="e.g. Fragile pigments — please avoid direct sunlight during delivery."></textarea>
+              </div>
+            </section>
+
+            <!-- Step 3: Payment & Gateway Selection -->
+            <section class="checkout-step-card" aria-label="Payment Gateway">
+              <div class="step-header">
+                <div class="step-number">3</div>
+                <h2 class="step-title">Payment & Settlement Method</h2>
+              </div>
+
+              <div class="payment-options-grid">
+                <div class="payment-option-card active" data-payment="upi" tabindex="0" role="button" aria-label="UPI / QR Code Payment">
+                  <div class="payment-icon">📱</div>
+                  <div class="payment-label">UPI / QR Code</div>
+                </div>
+                <div class="payment-option-card" data-payment="cod" tabindex="0" role="button" aria-label="Cash Payment">
+                  <div class="payment-icon">💵</div>
+                  <div class="payment-label">Cash Payment</div>
+                </div>
+              </div>
+
+              <!-- UPI / QR Code Sub Panel -->
+              <div class="payment-sub-panel active" id="panel-upi">
+                <div class="upi-qr-container">
+                  <div class="upi-qr-box">
+                    <div class="qr-image-wrapper">
+                      <img 
+                        id="upi-dynamic-qr-img" 
+                        src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&amp;data=upi%3A%2F%2Fpay%3Fpa%3Dsabahztrading%40razorpay%26pn%3DArt%2520Flair%2520Sabahz%26cu%3DINR" 
+                        alt="Scan UPI QR Code to Pay" 
+                        width="150" 
+                        height="150"
+                      />
+                      <div class="qr-scan-badge">Scan &amp; Pay</div>
+                    </div>
+                  </div>
+
+                  <div class="upi-qr-details">
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
+                      <span style="font-weight: 700; color: var(--primary); font-size: 0.95rem;">📱 Dynamic UPI QR Code</span>
+                      <span style="background: #10B981; color: #FFFFFF; font-size: 0.68rem; padding: 2px 7px; border-radius: 10px; font-weight: 700;">Live QR</span>
+                    </div>
+
+                    <p style="font-size: 0.8rem; color: var(--text); margin-bottom: 8px; line-height: 1.4;">
+                      Scan this QR code with <strong>Google Pay, PhonePe, Paytm, BHIM, CRED</strong> or any UPI app to pay the exact order amount.
+                    </p>
+
+                    <div class="upi-id-copy-row">
+                      <span class="upi-id-label">UPI ID:</span>
+                      <code class="upi-id-value" id="merchant-upi-id">sabahztrading@razorpay</code>
+                      <button type="button" class="btn-copy-upi" id="btn-copy-upi" title="Copy UPI ID">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+                        Copy
+                      </button>
+                    </div>
+
+                    <div class="upi-apps-row">
+                      <span class="app-chip">GPay</span>
+                      <span class="app-chip">PhonePe</span>
+                      <span class="app-chip">Paytm</span>
+                      <span class="app-chip">BHIM</span>
+                      <span class="app-chip">CRED</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Cash Payment Sub Panel -->
+              <div class="payment-sub-panel" id="panel-cod">
+                <p style="font-size: 0.85rem; color: var(--text); margin-bottom: 0;">
+                  💵 Pay with cash directly upon delivery of your studio order.
+                </p>
+              </div>
+            </section>
+
+            <!-- Order Placement Button -->
+            <button type="submit" class="btn btn-primary btn-block btn-lg" id="btn-place-order" style="font-size: 1.1rem; padding: 16px;">
+              Pay with UPI / QR Code (Razorpay) →
+            </button>
+          </form>
+        </div>
+
+        <!-- Sidebar Summary Column (Authoritative Backend Cart) -->
+        <aside aria-label="Order Summary">
+          <div class="order-summary-card">
+            <h2 class="summary-title" style="font-size: 1.25rem;">Authoritative Order Summary</h2>
+            
+            <!-- Items loaded directly from backend/database -->
+            <div id="checkout-items-list" style="max-height: 280px; overflow-y: auto; padding-right: 4px; margin-bottom: 16px;">
+              <div class="skeleton" style="height: 60px; margin-bottom: 8px; border-radius: 8px;"></div>
+              <div class="skeleton" style="height: 60px; border-radius: 8px;"></div>
+            </div>
+
+            <!-- Authoritative Totals -->
+            <div class="summary-row" style="border-top: 1px solid var(--border-light); padding-top: 12px;">
+              <span>Items Subtotal</span>
+              <strong id="checkout-subtotal">₹0.00</strong>
+            </div>
+            <div class="summary-row">
+              <span>Sabahz Studio Shipping</span>
+              <span id="checkout-shipping">Calculating...</span>
+            </div>
+            <div class="summary-row">
+              <span>Estimated GST (12%)</span>
+              <span id="checkout-tax">₹0.00</span>
+            </div>
+            <div class="summary-row total-row">
+              <span>Total Investment</span>
+              <span class="total-amount" id="checkout-total">₹0.00</span>
+            </div>
+
+            <div style="margin-top: 24px; padding: 14px; background: var(--bg-alt); border-radius: var(--radius-md); font-size: 0.76rem; color: var(--text-secondary); line-height: 1.5; border: 1px solid var(--border);">
+              <div>✓ <strong>ASTM D-4236</strong> certified non-toxic fine art materials</div>
+              <div>✓ <strong>Sabahz Climate-Safe</strong> protective packaging</div>
+              <div>✓ Authoritative final price validation by Python backend</div>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </main>
+
+  <!-- Dynamic Footer injected via js/components/footer.js -->
+  <div id="site-footer-container"></div>
+
+  <!-- Official Razorpay Checkout SDK -->
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+  <!-- Global Application Scripts -->
+  <script src="js/config.js"></script>
+  <script src="js/storage.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/services/authService.js"></script>
+  <script src="js/services/productService.js"></script>
+  <script src="js/services/cartService.js"></script>
+  <script src="js/services/wishlistService.js"></script>
+  <script src="js/services/aiService.js"></script>
+  <script src="js/search.js"></script>
+  <script src="js/components/toast.js"></script>
+  <script src="js/components/modal.js"></script>
+  <script src="js/components/product-card.js"></script>
+  <script src="js/components/cart-drawer.js"></script>
+  <script src="js/components/header.js"></script>
+  <script src="js/components/footer.js"></script>
+  <script src="js/pages/checkout.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>

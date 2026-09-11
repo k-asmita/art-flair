@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Medium & Supplies Matcher | Art Flair - Sabahz Trading</title>
+  <meta name="description" content="Use Sabahz Trading's AI Art Supplies Matcher to determine the perfect pigment medium, brush grade, and surface ground for your project." />
+  
+  <link rel="stylesheet" href="css/variables.css" />
+  <link rel="stylesheet" href="css/base.css" />
+  <link rel="stylesheet" href="css/layout.css" />
+  <link rel="stylesheet" href="css/components.css" />
+  <link rel="stylesheet" href="css/pages/ai-matcher.css" />
+</head>
+<body>
+
+  <div id="site-header-container"></div>
+
+  <main class="main-content section-padding">
+    <div class="container">
+      <div class="ai-hero-header">
+        <div class="ai-badge-header">
+          <span>✨ Sabahz AI/ML Art Supplies Engine</span>
+        </div>
+        <h1>Intelligent Medium & Studio Kit Advisor</h1>
+        <p style="color: var(--color-text-secondary); font-size: 1.05rem;">
+          Tell our AI system about your intended medium, creative discipline, and experience level. We'll formulate a chemically compatible, archival-grade supply kit for your project.
+        </p>
+      </div>
+
+      <!-- Interactive Wizard Container -->
+      <div class="wizard-container">
+        <!-- Progress Steps -->
+        <div class="wizard-progress-bar">
+          <div class="wizard-step-node active" data-step="1">
+            <div class="step-circle">1</div>
+            <span>Primary Medium</span>
+          </div>
+          <div class="wizard-step-node" data-step="2">
+            <div class="step-circle">2</div>
+            <span>Experience Level</span>
+          </div>
+          <div class="wizard-step-node" data-step="3">
+            <div class="step-circle">3</div>
+            <span>Project Scope</span>
+          </div>
+          <div class="wizard-step-node" data-step="4">
+            <div class="step-circle">4</div>
+            <span>Budget Tier</span>
+          </div>
+        </div>
+
+        <div class="wizard-body">
+          <!-- Step 1: Medium -->
+          <div class="wizard-step-panel active" id="step-1">
+            <h2 class="wizard-step-question">Which art medium will you be exploring?</h2>
+            <p class="wizard-step-hint">Select the core painting or drawing discipline for this project.</p>
+
+            <div class="ai-option-cards-grid">
+              <div class="ai-choice-card selected" data-key="medium" data-val="oil">
+                <div class="ai-choice-icon">🎨</div>
+                <div class="ai-choice-title">Artists' Oil Painting</div>
+                <div class="ai-choice-desc">Rich buttery blending, slow drying, radiant depth & historical glaze permanence.</div>
+              </div>
+
+              <div class="ai-choice-card" data-key="medium" data-val="acrylic">
+                <div class="ai-choice-icon">🖌️</div>
+                <div class="ai-choice-title">Heavy Body Acrylics</div>
+                <div class="ai-choice-desc">Vibrant saturation, rapid drying, flexible paint film & water cleanup.</div>
+              </div>
+
+              <div class="ai-choice-card" data-key="medium" data-val="watercolor">
+                <div class="ai-choice-icon">💧</div>
+                <div class="ai-choice-title">Watercolors & Gouache</div>
+                <div class="ai-choice-desc">Granulating gemstone pigments, luminous washes & velvet matte opacity.</div>
+              </div>
+
+              <div class="ai-choice-card" data-key="medium" data-val="drawing">
+                <div class="ai-choice-icon">✏️</div>
+                <div class="ai-choice-title">Drawing & Lightfast Pencils</div>
+                <div class="ai-choice-desc">100-year oil-based colored pencils, graphite, and archival Bristol paper.</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Step 2: Skill Level -->
+          <div class="wizard-step-panel" id="step-2">
+            <h2 class="wizard-step-question">What is your studio experience level?</h2>
+            <p class="wizard-step-hint">Our AI adjusts pigment single-load ratios and handling forgivingness accordingly.</p>
+
+            <div class="ai-option-cards-grid">
+              <div class="ai-choice-card" data-key="skillLevel" data-val="beginner">
+                <div class="ai-choice-icon">🌱</div>
+                <div class="ai-choice-title">Emerging Artist</div>
+                <div class="ai-choice-desc">Focus on intuitive color mixing, versatile multi-media brushes, and forgiving grounds.</div>
+              </div>
+
+              <div class="ai-choice-card selected" data-key="skillLevel" data-val="intermediate">
+                <div class="ai-choice-icon">🎯</div>
+                <div class="ai-choice-title">Intermediate Painter</div>
+                <div class="ai-choice-desc">Single-pigment focus for chromatic purity and controlled layer building.</div>
+              </div>
+
+              <div class="ai-choice-card" data-key="skillLevel" data-val="master">
+                <div class="ai-choice-icon">🏛️</div>
+                <div class="ai-choice-title">Master / Professional Atelier</div>
+                <div class="ai-choice-desc">Strict ASTM I lightfast permanence, 100% Belgian flax linen & Kolinsky sable.</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Step 3: Project Type -->
+          <div class="wizard-step-panel" id="step-3">
+            <h2 class="wizard-step-question">What type of subject or artwork?</h2>
+            <p class="wizard-step-hint">Influences brush hair springiness and surface tooth selection.</p>
+
+            <div class="ai-option-cards-grid">
+              <div class="ai-choice-card selected" data-key="projectType" data-val="portrait">
+                <div class="ai-choice-icon">👤</div>
+                <div class="ai-choice-title">Portraiture & Realism</div>
+                <div class="ai-choice-desc">Requires ultra-smooth blending, fine filament brushes, and subtle glazing.</div>
+              </div>
+
+              <div class="ai-choice-card" data-key="projectType" data-val="landscape">
+                <div class="ai-choice-icon">🏔️</div>
+                <div class="ai-choice-title">Landscape & Plein Air</div>
+                <div class="ai-choice-desc">Granulating earth pigments, absorbent cold-press surfaces, and portable kits.</div>
+              </div>
+
+              <div class="ai-choice-card" data-key="projectType" data-val="abstract">
+                <div class="ai-choice-icon">🌀</div>
+                <div class="ai-choice-title">Abstract & Textured Impasto</div>
+                <div class="ai-choice-desc">Heavy-body viscosity, stiff filbert brushes, and rigid gallery-depth canvas.</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Step 4: Budget Tier -->
+          <div class="wizard-step-panel" id="step-4">
+            <h2 class="wizard-step-question">Select your studio budget tier</h2>
+            <p class="wizard-step-hint">All Sabahz materials remain 100% artist-grade regardless of tier.</p>
+
+            <div class="ai-option-cards-grid">
+              <div class="ai-choice-card" data-key="budget" data-val="starter">
+                <div class="ai-choice-icon">🏷️</div>
+                <div class="ai-choice-title">Essential Studio (₹1,500 – ₹3,500)</div>
+                <div class="ai-choice-desc">Maximum value core palette with high tinting strength.</div>
+              </div>
+
+              <div class="ai-choice-card selected" data-key="budget" data-val="mid">
+                <div class="ai-choice-icon">⭐</div>
+                <div class="ai-choice-title">Professional Studio (₹3,500 – ₹7,500)</div>
+                <div class="ai-choice-desc">Pure single-pigment tubes, velvetouch synthetic brushes, archival block.</div>
+              </div>
+
+              <div class="ai-choice-card" data-key="budget" data-val="premium">
+                <div class="ai-choice-icon">👑</div>
+                <div class="ai-choice-title">Master Atelier (₹7,500+)</div>
+                <div class="ai-choice-desc">Rare gemstone pigments, handcrafted wooden boxes, Belgian linen.</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Step 5: AI Results Output -->
+          <div class="wizard-step-panel" id="step-5">
+            <div id="ai-results-content"></div>
+          </div>
+
+          <!-- Wizard Navigation -->
+          <div class="wizard-footer-nav" id="wizard-nav-buttons">
+            <button type="button" class="btn btn-ghost" id="btn-wizard-prev" style="visibility: hidden;">
+              ← Back
+            </button>
+            <button type="button" class="btn btn-primary btn-lg" id="btn-wizard-next">
+              Continue to Next Step →
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <div id="site-footer-container"></div>
+
+  <!-- Global Scripts -->
+  <script src="js/config.js"></script>
+  <script src="js/storage.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/services/authService.js"></script>
+  <script src="js/services/productService.js"></script>
+  <script src="js/services/cartService.js"></script>
+  <script src="js/services/wishlistService.js"></script>
+  <script src="js/services/aiService.js"></script>
+  <script src="js/search.js"></script>
+  <script src="js/recommendations.js"></script>
+  <script src="js/components/toast.js"></script>
+  <script src="js/components/modal.js"></script>
+  <script src="js/components/product-card.js"></script>
+    <script src="js/components/cart-drawer.js"></script>
+  <script src="js/components/header.js"></script>
+  <script src="js/components/footer.js"></script>
+  <script src="js/pages/ai-matcher.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>

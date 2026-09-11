@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Order Confirmed | Art Flair - Sabahz Trading</title>
+  
+  <link rel="stylesheet" href="css/variables.css" />
+  <link rel="stylesheet" href="css/base.css" />
+  <link rel="stylesheet" href="css/layout.css" />
+  <link rel="stylesheet" href="css/components.css" />
+</head>
+<body>
+
+  <div id="site-header-container"></div>
+
+  <main class="main-content section-padding">
+    <div class="container container-narrow">
+      <div style="background: var(--color-card); border-radius: var(--radius-xl); border: 1px solid var(--color-border); padding: 48px 36px; text-align: center; box-shadow: var(--shadow-lg);">
+        <div style="width: 72px; height: 72px; border-radius: var(--radius-full); background: var(--color-success-soft); color: var(--color-success); font-size: 2.2rem; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px;">
+          ✓
+        </div>
+
+        <div class="section-kicker" style="background: var(--color-success-soft); color: var(--color-success-dark);">
+          Sabahz Trading Dispatch Confirmed
+        </div>
+
+        <h1 style="font-size: 2.2rem; margin-bottom: 8px;">Your Studio Order is Booked!</h1>
+        <p style="color: var(--color-text-secondary); max-width: 520px; margin: 0 auto 28px;">
+          We are preparing your archival fine art materials with climate-safe protective packaging. A tracking dispatch notice will be sent to your email.
+        </p>
+
+        <div style="background: var(--color-bg); border-radius: var(--radius-lg); padding: 20px; border: 1px solid var(--color-border); display: flex; justify-content: space-around; text-align: left; margin-bottom: 32px; flex-wrap: wrap; gap: 16px;">
+          <div>
+            <div style="font-size: 0.75rem; color: var(--color-text-secondary); text-transform: uppercase;">Order Reference</div>
+            <strong style="font-family: var(--font-mono); color: var(--color-primary); font-size: 1.1rem;" id="order-id-display">AF-ORD-882194</strong>
+          </div>
+          <div>
+            <div style="font-size: 0.75rem; color: var(--color-text-secondary); text-transform: uppercase;">Order Date</div>
+            <strong id="order-date-display">Today</strong>
+          </div>
+          <div>
+            <div style="font-size: 0.75rem; color: var(--color-text-secondary); text-transform: uppercase;">Amount Paid</div>
+            <strong style="color: var(--primary); font-size: 1.1rem;" id="order-total-display">₹4,999.00</strong>
+          </div>
+        </div>
+
+        <div style="display: flex; justify-content: center; gap: 16px; flex-wrap: wrap;">
+          <a href="shop.html" class="btn btn-primary btn-lg">Continue Exploring Supplies</a>
+          <a href="ai-matcher.html" class="btn btn-outline btn-lg">Explore AI Medium Advisor</a>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <div id="site-footer-container"></div>
+
+  <!-- Global Scripts -->
+  <script src="js/config.js"></script>
+  <script src="js/storage.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/services/authService.js"></script>
+  <script src="js/services/productService.js"></script>
+  <script src="js/services/cartService.js"></script>
+  <script src="js/services/wishlistService.js"></script>
+  <script src="js/services/aiService.js"></script>
+  <script src="js/search.js"></script>
+  <script src="js/recommendations.js"></script>
+  <script src="js/components/toast.js"></script>
+  <script src="js/components/modal.js"></script>
+  <script src="js/components/product-card.js"></script>
+  <script src="js/components/header.js"></script>
+  <script src="js/components/footer.js"></script>
+  <script src="js/pages/order-success.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>

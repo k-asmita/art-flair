@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Shopping Cart & Atelier Order Review | Art Flair - Sabahz Trading</title>
+  <meta name="description" content="Review your database-driven Art Flair shopping cart, modify item quantities, apply studio promotional codes, and proceed to secure checkout." />
+  
+  <!-- CSS Stylesheets -->
+  <link rel="stylesheet" href="css/variables.css" />
+  <link rel="stylesheet" href="css/base.css" />
+  <link rel="stylesheet" href="css/layout.css" />
+  <link rel="stylesheet" href="css/components.css" />
+  <link rel="stylesheet" href="css/pages/cart-checkout.css" />
+</head>
+<body>
+
+  <!-- Dynamic Global Header -->
+  <div id="site-header-container"></div>
+
+  <main class="main-content section-padding">
+    <div class="container">
+      <!-- Breadcrumbs -->
+      <nav class="breadcrumb" aria-label="Breadcrumb">
+        <a href="index.html">Home</a>
+        <span class="breadcrumb-separator">/</span>
+        <a href="products.html">Shop</a>
+        <span class="breadcrumb-separator">/</span>
+        <span class="breadcrumb-current">Studio Shopping Cart</span>
+      </nav>
+
+      <div style="margin-bottom: 24px;">
+        <h1 style="margin-bottom: 4px;">Studio Shopping Cart</h1>
+        <p style="margin-bottom: 0; color: var(--text-secondary);">
+          Review your selected artist-grade mediums and archival tools. All items are synchronized with Sabahz inventory.
+        </p>
+      </div>
+
+      <!-- Main Cart View Container (Populated dynamically by js/pages/cart.js) -->
+      <div id="cart-view-container">
+        <div class="cart-page-layout">
+          <div>
+            <div class="skeleton" style="height: 60px; border-radius: 12px; margin-bottom: 20px;"></div>
+            <div class="skeleton" style="height: 280px; border-radius: 16px;"></div>
+          </div>
+          <div class="skeleton" style="height: 380px; border-radius: 16px;"></div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Dynamic Global Footer -->
+  <div id="site-footer-container"></div>
+
+  <!-- Global Scripts -->
+  <script src="js/config.js"></script>
+  <script src="js/storage.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/services/productService.js"></script>
+  <script src="js/services/cartService.js"></script>
+  <script src="js/services/wishlistService.js"></script>
+  <script src="js/services/aiService.js"></script>
+  <script src="js/search.js"></script>
+  <script src="js/recommendations.js"></script>
+  <script src="js/components/toast.js"></script>
+  <script src="js/components/modal.js"></script>
+  <script src="js/components/product-card.js"></script>
+    <script src="js/components/cart-drawer.js"></script>
+  <script src="js/components/header.js"></script>
+  <script src="js/components/footer.js"></script>
+  <script src="js/pages/cart.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>
