@@ -79,7 +79,8 @@ class DatabaseConnection:
                 charset='utf8mb4',
                 cursorclass=pymysql.cursors.DictCursor,
                 autocommit=False,  # Transactions managed explicitly
-                connect_timeout=10
+                connect_timeout=10,
+                ssl={'ssl': True}
             )
             return connection
         except pymysql.err.OperationalError as op_err:
@@ -222,3 +223,4 @@ def test_database_connection():
             "error": str(e),
             "message": f"Could not connect to MySQL at {host}:{port}. Please check .env credentials."
         }
+
