@@ -1,0 +1,26 @@
+# Environment secrets
+.env
+backend/.env
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.venv/
+venv/
+backend/venv/
+
+# Flask uploads
+backend/uploads/*
+
+# Local development
+*.log
+
+# IDE / editor
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db

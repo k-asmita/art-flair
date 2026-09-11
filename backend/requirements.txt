@@ -1,24 +1,12 @@
-# ==============================================================================
-# Art Flair - Sabahz Trading Backend Dependencies
-# Target Python Version: 3.12+ (Compatible with Python 3.12 & 3.13)
-# ==============================================================================
-
-# Core Web API Framework
-Flask>=3.0.0
-Werkzeug>=3.0.0
-Flask-Cors>=4.0.0
-
-# Database Connectivity (MySQL 8.0 & Auth Support)
-PyMySQL>=1.1.0
-cryptography>=42.0.0
-
-# Authentication, Token Handling & Security
-PyJWT>=2.8.0
-
-# Environment Configuration
-python-dotenv>=1.0.0
-
-# AI/ML & Analytics Engine
-numpy>=1.26.0
-pandas>=2.2.0
-scikit-learn>=1.4.0
+Flask==3.1.2
+Werkzeug==3.1.3
+Flask-Cors==6.0.1
+PyMySQL==1.1.2
+cryptography==46.0.1
+PyJWT==2.10.1
+python-dotenv==1.1.1
+numpy==2.2.6
+pandas==3.0.5
+scikit-learn==1.6.1
+scipy==1.15.3
+gunicorn==23.0.0
