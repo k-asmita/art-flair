@@ -627,3 +627,181 @@ body.admin-body {
     grid-template-columns: 1fr;
   }
 }
+
+/* ==========================================================================
+   ADMIN LOGIN & ACCESS RESTRICTION MODAL STYLES
+   ========================================================================== */
+.admin-login-wrapper {
+  min-height: 100vh;
+  width: 100%;
+  background: radial-gradient(circle at 15% 20%, rgba(201, 107, 75, 0.15), transparent 40%),
+              radial-gradient(circle at 85% 80%, rgba(116, 52, 142, 0.2), transparent 45%),
+              var(--admin-sidebar-bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.admin-login-card {
+  width: 100%;
+  max-width: 440px;
+  background: #FFFFFF;
+  border-radius: var(--admin-radius-xl);
+  padding: 40px 32px;
+  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  position: relative;
+  overflow: hidden;
+}
+
+.admin-login-header {
+  text-align: center;
+  margin-bottom: 28px;
+}
+
+.admin-login-brand-icon {
+  width: 56px;
+  height: 56px;
+  background: linear-gradient(135deg, var(--admin-terracotta), #74348E);
+  color: #FFF;
+  border-radius: var(--admin-radius-lg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 16px;
+  font-family: var(--admin-font-heading);
+  font-weight: 800;
+  font-size: 1.3rem;
+  letter-spacing: 0.5px;
+  box-shadow: 0 8px 20px rgba(201, 107, 75, 0.35);
+}
+
+.admin-login-title {
+  font-family: var(--admin-font-heading);
+  font-size: 1.65rem;
+  font-weight: 700;
+  color: var(--admin-text);
+  margin-bottom: 6px;
+}
+
+.admin-login-subtitle {
+  font-size: 0.86rem;
+  color: var(--admin-text-secondary);
+}
+
+.admin-login-btn {
+  width: 100%;
+  padding: 13px 20px;
+  background: var(--admin-terracotta);
+  color: #FFFFFF;
+  border: none;
+  border-radius: var(--admin-radius-md);
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.admin-login-btn:hover {
+  background: var(--admin-terracotta-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(201, 107, 75, 0.35);
+}
+
+.admin-login-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Restriction Popup Modal Box */
+.admin-restriction-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(18, 11, 24, 0.75);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 99999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  animation: fadeIn 0.25s ease-out;
+}
+
+.admin-restriction-modal {
+  width: 100%;
+  max-width: 480px;
+  background: #FFFFFF;
+  border-radius: var(--admin-radius-xl);
+  padding: 36px 30px;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.4);
+  text-align: center;
+  border: 1px solid rgba(211, 47, 47, 0.2);
+  animation: scaleUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+}
+
+.admin-restriction-icon-wrap {
+  width: 68px;
+  height: 68px;
+  border-radius: 50%;
+  background: var(--admin-red-soft);
+  color: var(--admin-red);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 20px;
+  border: 2px solid rgba(211, 47, 47, 0.25);
+}
+
+.admin-restriction-title {
+  font-family: var(--admin-font-heading);
+  font-size: 1.45rem;
+  font-weight: 800;
+  color: #1F1724;
+  margin-bottom: 14px;
+  letter-spacing: -0.2px;
+}
+
+.admin-restriction-quote-box {
+  background: #FFF5F5;
+  border: 1.5px dashed #FEB2B2;
+  border-radius: var(--admin-radius-md);
+  padding: 16px 18px;
+  margin-bottom: 18px;
+  color: #C53030;
+  font-weight: 700;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  text-align: center;
+}
+
+.admin-restriction-desc {
+  font-size: 0.86rem;
+  color: var(--admin-text-secondary);
+  line-height: 1.55;
+  margin-bottom: 24px;
+}
+
+.admin-restriction-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes scaleUp {
+  from { opacity: 0; transform: scale(0.92); }
+  to { opacity: 1; transform: scale(1); }
+}
+

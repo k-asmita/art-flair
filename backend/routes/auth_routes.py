@@ -12,12 +12,16 @@ def register():
     name = data.get('name')
     email = data.get('email')
     password = data.get('password')
-    role = data.get('role', 'customer')
 
     if not name or not email or not password:
         return error_response("Name, email, and password are required.", status_code=400)
 
-    result, err = AuthService.register(name, email, password, role=role)
+    clean_email = email.lower().strip()
+    if clean_email == "admin@gmail.com":
+        return error_response("This email address is reserved for administration.", status_code=403)
+
+    # Public registration is strictly for customer patron accounts
+    result, err = AuthService.register(name, clean_email, password, role="customer")
     if err:
         return error_response(err, status_code=409)
 

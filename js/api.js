@@ -2945,6 +2945,164 @@ const ApiClient = {
       return { success: false, message: 'Order reference not found' };
     }
 
+    // 10b. AUTHENTICATION ENDPOINTS
+    // POST /auth/login
+    if (path === API_CONFIG.ENDPOINTS.LOGIN && method === 'POST') {
+      const body = JSON.parse(config.body || '{}');
+      const email = (body.email || '').toLowerCase().trim();
+      const password = body.password || '';
+
+      if (email === 'admin@gmail.com') {
+        if (password === 'Admin@24') {
+          return {
+            success: true,
+            token: 'admin_bearer_token_' + Date.now(),
+            user: {
+              id: 'ADM-001',
+              name: 'Sabahz Admin',
+              email: 'admin@gmail.com',
+              role: 'admin',
+              discipline: 'Master Atelier Management',
+              isGuest: false
+            }
+          };
+        } else {
+          return {
+            success: false,
+            message: 'Invalid administrator password.'
+          };
+        }
+      }
+
+      // Customer check in mock registered users
+      let registeredUsers = [];
+      try {
+        registeredUsers = JSON.parse(localStorage.getItem('af_mock_registered_patrons') || '[]');
+      } catch (e) {
+        registeredUsers = [];
+      }
+
+      const match = registeredUsers.find(u => u.email.toLowerCase() === email);
+      if (match) {
+        if (match.password === password) {
+          return {
+            success: true,
+            token: 'customer_token_' + Date.now(),
+            user: {
+              id: match.id,
+              name: match.name,
+              email: match.email,
+              role: 'customer',
+              discipline: match.discipline || 'Fine Arts & Mixed Media',
+              isGuest: false
+            }
+          };
+        } else {
+          return {
+            success: false,
+            message: 'Invalid email or password.'
+          };
+        }
+      }
+
+      // Default patron fallback
+      if (email === 'artist.patron@studio.com' && password === 'masterpiece2026') {
+        return {
+          success: true,
+          token: 'patron_token_' + Date.now(),
+          user: {
+            id: 'CUST-104',
+            name: 'Aarav Sharma',
+            email: 'artist.patron@studio.com',
+            role: 'customer',
+            discipline: 'Oil Painting & Mineral Glazes',
+            isGuest: false
+          }
+        };
+      }
+
+      // If user typed any customer account credentials created during session
+      if (password && password.length >= 6) {
+        return {
+          success: true,
+          token: 'patron_token_' + Date.now(),
+          user: {
+            id: 'CUST-' + Math.floor(100 + Math.random() * 900),
+            name: email.split('@')[0].replace('.', ' ').replace(/\b\w/g, l => l.toUpperCase()),
+            email: email,
+            role: 'customer',
+            isGuest: false
+          }
+        };
+      }
+
+      return {
+        success: false,
+        message: 'Invalid studio credentials. Please check your email and password.'
+      };
+    }
+
+    // POST /auth/register
+    if (path === API_CONFIG.ENDPOINTS.REGISTER && method === 'POST') {
+      const body = JSON.parse(config.body || '{}');
+      const email = (body.email || '').toLowerCase().trim();
+      const name = (body.name || '').trim();
+      const password = body.password || '';
+
+      if (email === 'admin@gmail.com') {
+        return {
+          success: false,
+          message: 'This email is reserved for system administration.'
+        };
+      }
+
+      let registeredUsers = [];
+      try {
+        registeredUsers = JSON.parse(localStorage.getItem('af_mock_registered_patrons') || '[]');
+      } catch (e) {
+        registeredUsers = [];
+      }
+
+      if (registeredUsers.some(u => u.email.toLowerCase() === email)) {
+        return {
+          success: false,
+          message: 'An atelier account with this email address already exists.'
+        };
+      }
+
+      const newUser = {
+        id: 'CUST-' + Math.floor(100 + Math.random() * 900),
+        name: name || 'Patron Artist',
+        email: email,
+        password: password,
+        role: 'customer',
+        joinedDate: new Date().toISOString()
+      };
+
+      registeredUsers.push(newUser);
+      localStorage.setItem('af_mock_registered_patrons', JSON.stringify(registeredUsers));
+
+      return {
+        success: true,
+        token: 'customer_token_' + Date.now(),
+        user: {
+          id: newUser.id,
+          name: newUser.name,
+          email: newUser.email,
+          role: 'customer',
+          isGuest: false
+        }
+      };
+    }
+
+    // POST /auth/logout
+    if (path === API_CONFIG.ENDPOINTS.LOGOUT && method === 'POST') {
+      return {
+        success: true,
+        message: 'Signed out of studio session.'
+      };
+    }
+
     // 11. PROFILE ENDPOINTS
     // GET /auth/profile
     if (path === API_CONFIG.ENDPOINTS.USER_PROFILE && method === 'GET') {

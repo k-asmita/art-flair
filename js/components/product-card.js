@@ -8,7 +8,7 @@
  * - Product Name
  * - Rating & Reviews
  * - Single Price (₹ INR) from database
- * - '+ Add to Cart' & 'View Details' buttons
+ * - 'Add to Cart' & 'View Details' buttons
  */
 
 const ProductCardComponent = {
@@ -85,7 +85,7 @@ const ProductCardComponent = {
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M12 5v14M5 12h14"/>
               </svg>
-              + Add to Cart
+              Add to Cart
             </button>
 
             <a 
@@ -131,7 +131,7 @@ const ProductCardComponent = {
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M12 5v14M5 12h14"/>
             </svg>
-            + Add to Cart
+            Add to Cart
           `;
         }
       }

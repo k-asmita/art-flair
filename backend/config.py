@@ -42,3 +42,8 @@ class Config:
     # Razorpay Payment Gateway
     RAZORPAY_KEY_ID = os.getenv('RAZORPAY_KEY_ID', 'rzp_test_TaSPXLlC9EXMVC')
     RAZORPAY_KEY_SECRET = os.getenv('RAZORPAY_KEY_SECRET', 'nYQy7lrOyFG5TxzRzHouXc1T')
+
+    # Google Gemini AI Recommendation Engine
+    GEMINI_API_KEY = os.getenv('GEMINI_API_KEY', '')
+    GEMINI_MODEL = os.getenv('GEMINI_MODEL', 'gemini-1.5-flash')
+

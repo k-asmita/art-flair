@@ -83,6 +83,7 @@ const HeaderComponent = {
               </svg>
               AI Supply Matcher
             </a>
+            ${currentUser?.role === 'admin' ? `
             <a href="admin/dashboard.html" class="user-dropdown-link" style="color: #74348E; font-weight: 700;">
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <rect width="7" height="9" x="3" y="3" rx="1"/>
@@ -92,6 +93,7 @@ const HeaderComponent = {
               </svg>
               Admin Atelier Portal
             </a>
+            ` : ''}
             <button type="button" class="user-dropdown-link logout-link btn-block" id="btn-desktop-logout" style="text-align: left; cursor: pointer;">
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>

@@ -209,13 +209,13 @@ def seed():
             ))
 
             # 4. Default Admin User
-            admin_pwd = generate_password_hash("sabahzadmin2026")
+            admin_pwd = generate_password_hash("Admin@24")
             cur.execute("""
                 INSERT INTO users (id, name, email, password_hash, role, discipline)
                 VALUES (%s, %s, %s, %s, %s, %s)
-                ON DUPLICATE KEY UPDATE name = VALUES(name);
+                ON DUPLICATE KEY UPDATE name = VALUES(name), password_hash = VALUES(password_hash), role = VALUES(role);
             """, (
-                "ADM-001", "Sabahz Admin", "admin@artflair.com", admin_pwd,
+                "ADM-001", "Sabahz Admin", "admin@gmail.com", admin_pwd,
                 "admin", "Atelier Management"
             ))
 

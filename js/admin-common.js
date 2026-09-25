@@ -1,12 +1,230 @@
 /**
- * Art Flair - Admin Common Layout & Sidebar Component
+ * Art Flair - Admin Common Layout & Security Guard Component
  * Developed for Sabahz Trading
  */
 
+const AdminAuth = {
+  KEYS: {
+    ADMIN_USER: 'artflair_admin_user',
+    ADMIN_TOKEN: 'artflair_admin_token'
+  },
+
+  // Authorized master administrator email
+  ADMIN_EMAIL: 'admin@gmail.com',
+
+  getAdminUser() {
+    try {
+      const raw = sessionStorage.getItem(this.KEYS.ADMIN_USER) || localStorage.getItem(this.KEYS.ADMIN_USER);
+      if (!raw) return null;
+      const user = JSON.parse(raw);
+      if (user && user.role === 'admin' && String(user.email).toLowerCase() === this.ADMIN_EMAIL) {
+        return user;
+      }
+      return null;
+    } catch (e) {
+      return null;
+    }
+  },
+
+  getAdminToken() {
+    return sessionStorage.getItem(this.KEYS.ADMIN_TOKEN) || localStorage.getItem(this.KEYS.ADMIN_TOKEN) || null;
+  },
+
+  isAuthenticated() {
+    const admin = this.getAdminUser();
+    const token = this.getAdminToken();
+    return !!(admin && token);
+  },
+
+  setAdminSession(user, token, rememberMe = false) {
+    const storage = rememberMe ? localStorage : sessionStorage;
+    storage.setItem(this.KEYS.ADMIN_USER, JSON.stringify(user));
+    storage.setItem(this.KEYS.ADMIN_TOKEN, token);
+    
+    // Also clear session storage if rememberMe is selected to prevent duplicate stale states
+    if (rememberMe) {
+      sessionStorage.removeItem(this.KEYS.ADMIN_USER);
+      sessionStorage.removeItem(this.KEYS.ADMIN_TOKEN);
+    } else {
+      localStorage.removeItem(this.KEYS.ADMIN_USER);
+      localStorage.removeItem(this.KEYS.ADMIN_TOKEN);
+    }
+  },
+
+  clearAdminSession() {
+    sessionStorage.removeItem(this.KEYS.ADMIN_USER);
+    sessionStorage.removeItem(this.KEYS.ADMIN_TOKEN);
+    localStorage.removeItem(this.KEYS.ADMIN_USER);
+    localStorage.removeItem(this.KEYS.ADMIN_TOKEN);
+  },
+
+  logout() {
+    this.clearAdminSession();
+    window.location.href = 'login.html';
+  },
+
+  /**
+   * Display the mandatory popup restriction dialog box
+   */
+  showRestrictionModal({ customMessage, redirectOnClose = true } = {}) {
+    // Remove existing modal if present
+    const existing = document.getElementById('admin-restriction-modal-root');
+    if (existing) existing.remove();
+
+    const restrictionMessage = customMessage || 'if you have correct login credintials then you can login in admin panel otherwise you cannot login';
+
+    const modalBackdrop = document.createElement('div');
+    modalBackdrop.id = 'admin-restriction-modal-root';
+    modalBackdrop.className = 'admin-restriction-backdrop';
+
+    modalBackdrop.innerHTML = `
+      <div class="admin-restriction-modal" role="dialog" aria-modal="true" aria-labelledby="restriction-title">
+        <div class="admin-restriction-icon-wrap">
+          <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+            <rect width="18" height="11" x="3" y="11" rx="2" ry="2"/>
+            <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+          </svg>
+        </div>
+
+        <h2 class="admin-restriction-title" id="restriction-title">Administrator Access Restricted</h2>
+
+        <div class="admin-restriction-quote-box">
+          ⚠️ ${restrictionMessage}
+        </div>
+
+        <p class="admin-restriction-desc">
+          The Art Flair Admin Atelier requires verified master administrator credentials. 
+          Customer atelier accounts and unverified requests cannot access or view this management portal.
+        </p>
+
+        <div class="admin-restriction-buttons">
+          <button type="button" class="btn-admin btn-admin-primary" id="btn-modal-go-login" style="width: 100%; justify-content: center; padding: 12px;">
+            Go to Admin Login
+          </button>
+          <button type="button" class="btn-admin btn-admin-secondary" id="btn-modal-go-store" style="width: 100%; justify-content: center; padding: 12px;">
+            Return to Public Store
+          </button>
+        </div>
+      </div>
+    `;
+
+    document.body.appendChild(modalBackdrop);
+
+    // Event listeners
+    document.getElementById('btn-modal-go-login')?.addEventListener('click', () => {
+      window.location.href = 'login.html';
+    });
+
+    document.getElementById('btn-modal-go-store')?.addEventListener('click', () => {
+      window.location.href = '../index.html';
+    });
+  },
+
+  /**
+   * Route guard for all admin pages.
+   * If customer/guest attempts access, blocks page rendering and displays restriction popup.
+   */
+  guardPage() {
+    const currentPath = window.location.pathname.toLowerCase();
+    if (currentPath.endsWith('login.html')) {
+      // If already authenticated as admin and on login page, redirect to dashboard
+      if (this.isAuthenticated()) {
+        window.location.href = 'dashboard.html';
+      }
+      return true;
+    }
+
+    if (!this.isAuthenticated()) {
+      // Hide body content to prevent unauthorized viewing of sensitive admin data
+      const mainContainer = document.querySelector('.admin-main') || document.body;
+      if (mainContainer) {
+        mainContainer.style.display = 'none';
+      }
+
+      // Show popup box with restriction message
+      this.showRestrictionModal({ redirectOnClose: true });
+      return false;
+    }
+
+    return true;
+  },
+
+  /**
+   * Authenticate admin with user id admin@gmail.com and password Admin@24
+   */
+  async login(email, password, rememberMe = false) {
+    const cleanEmail = (email || '').trim().toLowerCase();
+    const cleanPassword = password || '';
+
+    // Verify exact admin credentials
+    if (cleanEmail !== this.ADMIN_EMAIL || cleanPassword !== 'Admin@24') {
+      this.showRestrictionModal();
+      throw new Error('if you have correct login credintials then you can login in admin panel otherwise you cannot login');
+    }
+
+    try {
+      let response;
+      try {
+        response = await ApiClient.post(API_CONFIG.ENDPOINTS.LOGIN, {
+          email: cleanEmail,
+          password: cleanPassword,
+          remember_me: rememberMe
+        });
+      } catch (err) {
+        // Fallback for mock/offline execution
+        response = {
+          success: true,
+          token: 'admin_token_' + Date.now(),
+          user: {
+            id: 'ADM-001',
+            name: 'Sabahz Admin',
+            email: 'admin@gmail.com',
+            role: 'admin',
+            discipline: 'Master Atelier Management',
+            isGuest: false
+          }
+        };
+      }
+
+      if (response && response.success) {
+        const user = response.user || {
+          id: 'ADM-001',
+          name: 'Sabahz Admin',
+          email: 'admin@gmail.com',
+          role: 'admin',
+          isGuest: false
+        };
+        const token = response.token || ('admin_token_' + Date.now());
+
+        if (user.role !== 'admin' || user.email.toLowerCase() !== this.ADMIN_EMAIL) {
+          this.showRestrictionModal();
+          throw new Error('if you have correct login credintials then you can login in admin panel otherwise you cannot login');
+        }
+
+        this.setAdminSession(user, token, rememberMe);
+        return { success: true, user, token };
+      }
+
+      this.showRestrictionModal();
+      throw new Error('if you have correct login credintials then you can login in admin panel otherwise you cannot login');
+    } catch (e) {
+      if (!document.getElementById('admin-restriction-modal-root')) {
+        this.showRestrictionModal();
+      }
+      throw e;
+    }
+  }
+};
+
 const AdminLayout = {
   render(activePageKey) {
+    // 1. Guard page access
+    if (!AdminAuth.guardPage()) {
+      return;
+    }
+
+    const currentAdmin = AdminAuth.getAdminUser() || { name: 'Sabahz Admin', email: 'admin@gmail.com' };
     const sidebarEl = document.getElementById('admin-sidebar-container');
-    const headerEl = document.getElementById('admin-header-container');
 
     if (sidebarEl) {
       sidebarEl.innerHTML = `
@@ -96,7 +314,7 @@ const AdminLayout = {
             <div class="admin-user-info">
               <div class="admin-avatar">SA</div>
               <div>
-                <div class="admin-user-name">Sabahz Admin</div>
+                <div class="admin-user-name">${currentAdmin.name}</div>
                 <div class="admin-user-role">Master Atelier Access</div>
               </div>
             </div>
@@ -111,8 +329,12 @@ const AdminLayout = {
     // Attach logout event
     document.getElementById('btn-admin-logout')?.addEventListener('click', () => {
       if (confirm('Sign out of Art Flair Admin Portal?')) {
-        window.location.href = '../login.html';
+        AdminAuth.logout();
       }
     });
   }
 };
+
+// Global exports
+window.AdminAuth = AdminAuth;
+window.AdminLayout = AdminLayout;
