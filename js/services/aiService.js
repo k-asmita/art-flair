@@ -32,7 +32,7 @@ const AiService = {
         // Otherwise assemble catalog bundle
         const catalogResponse = await ProductService.getProducts();
         const products = catalogResponse.products || [];
-        const bundle = this._assembleCatalogBundle(products, medium);
+        const bundle = this._assembleCatalogBundle(products, medium, budget);
 
         return {
           ...response,
@@ -57,7 +57,7 @@ const AiService = {
     await new Promise(resolve => setTimeout(resolve, 350));
     const catalogResponse = await ProductService.getProducts();
     const products = catalogResponse.products || [];
-    const bundle = this._assembleCatalogBundle(products, medium);
+    const bundle = this._assembleCatalogBundle(products, medium, budget);
 
     let profileExplanation = '';
     if (skillLevel === 'beginner') {
@@ -110,22 +110,62 @@ const AiService = {
     };
   },
 
-  _assembleCatalogBundle(products, medium) {
-    let mediumProducts = products.filter(p => {
-      const cat = (p.category || p.category_name || '').toLowerCase();
-      if (medium === 'oil') return cat.includes('oil') || cat.includes('paint');
-      if (medium === 'acrylic') return cat.includes('acrylic') || cat.includes('paint');
-      if (medium === 'watercolor') return cat.includes('watercolor') || cat.includes('paint');
-      if (medium === 'drawing') return cat.includes('drawing') || cat.includes('pen');
-      return true;
+  _assembleCatalogBundle(products, medium, budget = 'mid') {
+    if (!products || products.length === 0) {
+      return { items: [], totalPrice: 0, bundleSavings: 0 };
+    }
+
+    const medLower = String(medium || 'oil').toLowerCase();
+
+    // 1. Medium specific core product
+    let coreMedium = products.find(p => {
+      const name = String(p.name || p.product_name || '').toLowerCase();
+      const cat = String(p.category || p.category_name || '').toLowerCase();
+      if (medLower === 'oil') return (cat.includes('paint') && name.includes('oil')) || name.includes('oil');
+      if (medLower === 'acrylic') return (cat.includes('paint') && name.includes('acrylic')) || name.includes('acrylic');
+      if (medLower === 'watercolor') return (cat.includes('paint') && name.includes('water')) || name.includes('water') || name.includes('gouache');
+      if (medLower === 'drawing') return cat.includes('drawing') || cat.includes('pen') || name.includes('pencil') || name.includes('graphite');
+      return cat.includes('paint');
+    }) || products.find(p => String(p.category || '').toLowerCase().includes('paint')) || products[0];
+
+    // 2. Brush or application tool
+    let brushTool = products.find(p => {
+      const cat = String(p.category || p.categoryId || '').toLowerCase();
+      const name = String(p.name || '').toLowerCase();
+      return cat.includes('brush') || name.includes('brush') || name.includes('palette knife');
+    }) || products[1] || products[0];
+
+    // 3. Archival substrate surface (Canvas / Paper & Pads)
+    let surface = products.find(p => {
+      const cat = String(p.category || p.categoryId || '').toLowerCase();
+      const name = String(p.name || '').toLowerCase();
+      if (medLower === 'watercolor' || medLower === 'drawing') {
+        return cat.includes('paper') || name.includes('paper') || name.includes('pad') || name.includes('sketchbook');
+      }
+      return cat.includes('canvas') || name.includes('canvas') || name.includes('linen') || name.includes('panel');
+    }) || products.find(p => String(p.category || '').toLowerCase().includes('canvas')) || products[2] || products[0];
+
+    // 4. Studio accessory (Painting medium, varnish, or accessory tool)
+    let accessory = products.find(p => {
+      const cat = String(p.category || p.categoryId || '').toLowerCase();
+      return cat.includes('medium') || cat.includes('accessories');
     });
 
-    const coreMedium = mediumProducts[0] || products[0];
-    const brushTool = products.find(p => (p.categoryId || p.category_id || '').includes('brush')) || products[1] || products[0];
-    const surface = products.find(p => (p.categoryId || p.category_id || '').includes('canvas') || (p.categoryId || '').includes('paper')) || products[2] || products[0];
+    const candidateItems = [coreMedium, brushTool, surface, accessory].filter(Boolean);
+    // Deduplicate in case fallbacks overlapped
+    const seenIds = new Set();
+    const bundleItems = candidateItems.filter(item => {
+      const id = item.id || item.product_id;
+      if (seenIds.has(id)) return false;
+      seenIds.add(id);
+      return true;
+    }).slice(0, 4);
 
-    const bundleItems = [coreMedium, brushTool, surface].filter(Boolean);
-    const bundleTotal = bundleItems.reduce((sum, item) => sum + (item.price * (1 - (item.discount || 0)/100)), 0);
+    const bundleTotal = bundleItems.reduce((sum, item) => {
+      const disc = Number(item.discount || 0);
+      const pr = Number(item.price || 0);
+      return sum + (pr * (1 - disc / 100));
+    }, 0);
 
     return {
       items: bundleItems,
@@ -171,7 +211,7 @@ Return JSON:
     const parsed = JSON.parse(text);
     const catalogResponse = await ProductService.getProducts();
     const products = catalogResponse.products || [];
-    const bundle = this._assembleCatalogBundle(products, medium);
+    const bundle = this._assembleCatalogBundle(products, medium, budget);
 
     return {
       success: true,
