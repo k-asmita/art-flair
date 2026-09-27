@@ -2274,16 +2274,16 @@ const MOCK_DATABASE_PRODUCTS = [
 ];
 
 const MOCK_CATEGORIES = [
-  { id: 'accessories', name: 'Accessories', count: 38, icon: 'tool' },
-  { id: 'brushes', name: 'Brushes', count: 64, icon: 'brush' },
-  { id: 'calligraphy', name: 'Calligraphy', count: 28, icon: 'feather' },
-  { id: 'canvas', name: 'Canvas', count: 42, icon: 'layers' },
-  { id: 'drawing-media', name: 'Drawing Media', count: 56, icon: 'edit-3' },
-  { id: 'easels', name: 'Easels', count: 22, icon: 'layout' },
-  { id: 'painting-medium', name: 'Painting Medium', count: 35, icon: 'droplet' },
-  { id: 'paints', name: 'Paints', count: 96, icon: 'palette' },
-  { id: 'paper-pads', name: 'Paper & Pads', count: 72, icon: 'book-open' },
-  { id: 'pen-markers', name: 'Pen & Markers', count: 48, icon: 'pen-tool' }
+  { id: 'accessories', name: 'Accessories', count: 12, icon: 'tool' },
+  { id: 'brushes', name: 'Brushes', count: 11, icon: 'brush' },
+  { id: 'calligraphy', name: 'Calligraphy', count: 5, icon: 'feather' },
+  { id: 'canvas', name: 'Canvas', count: 3, icon: 'layers' },
+  { id: 'drawing-media', name: 'Drawing Media', count: 10, icon: 'edit-3' },
+  { id: 'easels', name: 'Easels', count: 3, icon: 'layout' },
+  { id: 'painting-medium', name: 'Painting Medium', count: 4, icon: 'droplet' },
+  { id: 'paints', name: 'Paints', count: 9, icon: 'palette' },
+  { id: 'paper-pads', name: 'Paper & Pads', count: 5, icon: 'book-open' },
+  { id: 'pen-markers', name: 'Pen & Markers', count: 11, icon: 'pen-tool' }
 ];
 
 // Fallback brands
