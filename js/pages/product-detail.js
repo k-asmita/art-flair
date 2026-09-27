@@ -79,10 +79,12 @@ const ProductDetailPage = {
 
       // Price & Discount Calculation
       const discountedPrice = product.discount > 0 ? product.price * (1 - product.discount / 100) : product.price;
-      const catName = product.category_name || product.category || 'Accessories';
-      const fileName = (product.product_image ? product.product_image.split('/').pop() : '') || (product.image ? product.image.split('/').pop() : '');
-      const directProductsPath = `Products/${catName}/${fileName}`;
-      const mainImgSrc = product.image || product.image_url || directProductsPath;
+      const cat = product.category_name || product.category || product.categoryId || 'Accessories';
+      const dirName = (typeof resolveProductCategoryDir === 'function') ? resolveProductCategoryDir(cat) : cat;
+      const rawImage = String(product.product_image || product.image || product.image_url || '').replace(/^\/+/, '');
+      const fileName = rawImage.split('/').pop().split('\\').pop() || 'acrylic.jpg';
+      const directProductsPath = `Products/${dirName}/${fileName}`;
+      const mainImgSrc = (typeof resolveProductImageUrl === 'function') ? resolveProductImageUrl(product) : directProductsPath;
       const galleryImages = product.gallery && product.gallery.length > 0 ? product.gallery : [mainImgSrc];
       const isWishlisted = StorageUtil.isWishlisted(product.id);
 

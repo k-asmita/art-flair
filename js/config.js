@@ -119,21 +119,52 @@ function getApiOrigin() {
   return String(API_CONFIG.BASE_URL || '').replace(/\/api\/?$/, '');
 }
 
+const CATEGORY_DIR_MAP = {
+  'accessories': 'Accessories',
+  'brushes': 'Brushes',
+  'calligraphy': 'Calligraphy',
+  'canvas': 'Canvas',
+  'drawing-media': 'Drawing Media',
+  'drawing media': 'Drawing Media',
+  'drawing_media': 'Drawing Media',
+  'easels': 'Easels',
+  'painting-medium': 'Painting Medium',
+  'painting medium': 'Painting Medium',
+  'painting_medium': 'Painting Medium',
+  'paints': 'Paints',
+  'paper-pads': 'Paper & Pads',
+  'paper & pads': 'Paper & Pads',
+  'paper_pads': 'Paper & Pads',
+  'pen-markers': 'Pen & Markers',
+  'pen & markers': 'Pen & Markers',
+  'pen_markers': 'Pen & Markers'
+};
+
+function resolveProductCategoryDir(catName) {
+  if (!catName) return 'Accessories';
+  const key = String(catName).toLowerCase().trim();
+  return CATEGORY_DIR_MAP[key] || catName;
+}
+
 /**
- * Point product photos at the Flask backend (Live Server cannot serve /api/images).
+ * Robust Product Photo Resolver across local static files and API endpoints.
  */
 function resolveProductImageUrl(productOrUrl, productId) {
   const item = productOrUrl && typeof productOrUrl === 'object' ? productOrUrl : null;
-  const cat = (item && (item.category || item.category_name)) || 'Accessories';
+  const rawCat = (item && (item.category || item.category_name || item.categoryId || item.category_id)) || 'Accessories';
+  const dirName = resolveProductCategoryDir(rawCat);
   const raw = item
-    ? (item.image || item.image_url || item.category_image_path || '')
+    ? (item.image || item.image_url || item.product_image || item.category_image_path || '')
     : (typeof productOrUrl === 'string' ? productOrUrl : '');
 
   if (raw && /^https?:\/\//i.test(raw)) return raw;
-  if (raw && (raw.startsWith('Products/') || raw.startsWith('products/'))) return raw;
+
   if (raw) {
     const filename = raw.split('/').pop().split('\\').pop();
-    if (filename) return `Products/${cat}/${filename}`;
+    if (filename && filename !== 'undefined' && filename !== 'null') {
+      return `Products/${dirName}/${filename}`;
+    }
   }
-  return `Products/${cat}/acrylic.jpg`;
+
+  return `Products/${dirName}/acrylic.jpg`;
 }

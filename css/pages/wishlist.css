@@ -106,7 +106,7 @@
   height: 220px;
   min-height: 220px;
   max-height: 220px;
-  background-color: var(--bg-alt, #FBF8F3);
+  background-color: #FFFFFF;
   overflow: hidden;
   display: flex;
   align-items: center;
@@ -118,19 +118,28 @@
 
 @media (max-width: 1024px) {
   .wishlist-card-media {
-    height: 200px;
-    min-height: 200px;
-    max-height: 200px;
+    height: 210px;
+    min-height: 210px;
+    max-height: 210px;
     padding: 10px;
   }
 }
 
 @media (max-width: 640px) {
   .wishlist-card-media {
-    height: 180px;
-    min-height: 180px;
-    max-height: 180px;
-    padding: 8px;
+    height: 240px;
+    min-height: 240px;
+    max-height: 240px;
+    padding: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .wishlist-card-media {
+    height: clamp(220px, 62vw, 260px);
+    min-height: 220px;
+    max-height: 260px;
+    padding: 10px;
   }
 }
 

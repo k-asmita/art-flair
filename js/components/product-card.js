@@ -28,13 +28,16 @@ const ProductCardComponent = {
     }).format(priceNumber);
 
     // Robust Image URL resolution
+    const cat = product.category_name || product.category || product.categoryId || 'Accessories';
+    const dirName = (typeof resolveProductCategoryDir === 'function') 
+      ? resolveProductCategoryDir(cat) 
+      : cat;
     const rawImage = String(product.product_image || product.image || product.image_url || '').replace(/^\/+/, '');
-    const cat = product.category_name || product.category || 'Accessories';
-    const filename = rawImage.split('/').pop() || 'acrylic.jpg';
-    const fallbackPath = `Products/${cat}/${filename}`;
+    const filename = rawImage.split('/').pop().split('\\').pop() || 'acrylic.jpg';
+    const fallbackPath = `Products/${dirName}/${filename}`;
     const imageSrc = (typeof resolveProductImageUrl === 'function') 
       ? resolveProductImageUrl(product) 
-      : (rawImage.startsWith('Products/') ? rawImage : `/static/images/${rawImage}`);
+      : fallbackPath;
 
     // Rating star generation
     const fullStars = Math.floor(ratingValue);
