@@ -134,7 +134,6 @@ const HomePage = {
             ${iconMap[cat.id] || iconMap['oil-painting']}
           </div>
           <div class="category-name">${cat.name.split('&')[0]}</div>
-          <div class="category-count">${cat.count} Archival Supplies</div>
         </a>
       `).join('');
 
