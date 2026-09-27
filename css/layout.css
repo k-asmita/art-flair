@@ -5,6 +5,105 @@
  */
 
 /* ==========================================================================
+   TOP PROMOTIONAL ANNOUNCEMENT BAR
+   ========================================================================== */
+.top-announcement-bar {
+  background: linear-gradient(90deg, #472157 0%, #5B2C6F 45%, #74348E 80%, #5B2C6F 100%);
+  color: #FFFFFF;
+  font-size: 0.82rem;
+  font-weight: 500;
+  padding: 7px 16px;
+  position: relative;
+  z-index: calc(var(--z-sticky, 100) + 5);
+  border-bottom: 1px solid rgba(233, 185, 73, 0.35);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
+  transition: opacity 0.25s ease, max-height 0.25s ease, padding 0.25s ease;
+  overflow: hidden;
+}
+
+.top-announcement-bar.is-hidden {
+  display: none !important;
+}
+
+.announcement-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  min-height: 22px;
+}
+
+.announcement-text {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  text-align: center;
+  flex-wrap: wrap;
+  line-height: 1.4;
+  letter-spacing: 0.01em;
+}
+
+.announcement-code-pill {
+  background: linear-gradient(135deg, #F5C84C 0%, #E9B949 100%);
+  color: #2D1438;
+  font-weight: 800;
+  font-size: 0.76rem;
+  padding: 2px 7px;
+  border-radius: 4px;
+  letter-spacing: 0.04em;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.announcement-code-pill:hover {
+  transform: scale(1.05);
+  box-shadow: 0 2px 6px rgba(233, 185, 73, 0.5);
+}
+
+.announcement-close-btn {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.75);
+  font-size: 0.95rem;
+  line-height: 1;
+  padding: 4px 6px;
+  cursor: pointer;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.15s ease, background-color 0.15s ease;
+}
+
+.announcement-close-btn:hover {
+  color: #FFFFFF;
+  background: rgba(255, 255, 255, 0.2);
+}
+
+@media (max-width: 640px) {
+  .top-announcement-bar {
+    font-size: 0.75rem;
+    padding: 6px 30px 6px 10px;
+  }
+  .announcement-text {
+    font-size: 0.74rem;
+    gap: 4px;
+  }
+  .announcement-code-pill {
+    font-size: 0.72rem;
+    padding: 1px 5px;
+  }
+}
+
+/* ==========================================================================
    MAIN STICKY HEADER
    ========================================================================== */
 .site-header {

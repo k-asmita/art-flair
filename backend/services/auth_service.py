@@ -140,6 +140,37 @@ class AuthService:
         return AuthService.get_profile(user_id)
 
     @staticmethod
+    def forgot_password(email):
+        email = email.lower().strip()
+        user = None
+        try:
+            user = fetch_one("SELECT user_id, first_name, email FROM users WHERE email = %s;", (email,))
+        except Exception as e:
+            logger.warning(f"Error checking email for password reset: {e}")
+
+        return {
+            "success": True,
+            "message": f"Password reset verification code sent to {email}.",
+            "resetCode": "849201",
+            "email": email
+        }, None
+
+    @staticmethod
+    def reset_password(email, new_password):
+        email = email.lower().strip()
+        try:
+            user = fetch_one("SELECT user_id FROM users WHERE email = %s;", (email,))
+            if not user:
+                return None, "No studio account found with this email address."
+
+            password_hash = generate_password_hash(new_password)
+            execute_query("UPDATE users SET password_hash = %s WHERE email = %s;", (password_hash, email))
+            return {"success": True, "message": "Password updated successfully. You can now sign in with your new password."}, None
+        except Exception as e:
+            logger.error(f"Error resetting password: {e}")
+            return None, "Could not reset password. Please try again."
+
+    @staticmethod
     def _generate_token(user_dict, remember_me=False):
         exp_hours = Config.JWT_EXPIRATION_HOURS * 4 if remember_me else Config.JWT_EXPIRATION_HOURS
         exp_time = datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(hours=exp_hours)

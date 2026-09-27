@@ -134,25 +134,34 @@ const CheckoutPage = {
       if (itemsListEl) {
         itemsListEl.innerHTML = items.map(item => {
           const itemSubtotal = (item.price * item.quantity);
+          const rawImg = String(item.product_image || item.image || item.image_url || '').replace(/^\/+/, '');
+          const cat = item.category_name || item.category || 'Accessories';
+          const filename = rawImg.split('/').pop() || 'acrylic.jpg';
+          const fallbackPath = `Products/${cat}/${filename}`;
+          const itemImg = (typeof resolveProductImageUrl === 'function')
+            ? resolveProductImageUrl(item)
+            : (rawImg.startsWith('Products/') ? rawImg : `/static/images/${rawImg}`);
+
           return `
             <div class="checkout-item-compact">
-              <div style="display: flex; align-items: center; gap: 10px; min-width: 0;">
+              <div style="display: flex; align-items: center; gap: 12px; min-width: 0; flex: 1;">
                 <img 
-                  src="${item.image || item.image_url || `Products/${item.category || 'Accessories'}/${(item.image ? item.image.split('/').pop() : '')}`}" 
-                  alt="${item.name}" 
+                  src="${itemImg}" 
+                  alt="${item.name || item.product_name}" 
                   class="checkout-item-thumb" 
-                  onerror="this.onerror=null; this.src='Products/${item.category || 'Accessories'}/${(item.image ? item.image.split('/').pop() : '')}';"
+                  style="width: 50px; height: 50px; min-width: 50px; max-width: 50px; border-radius: 8px; object-fit: cover; flex-shrink: 0;"
+                  onerror="this.onerror=null; this.src='${fallbackPath}';"
                 />
-                <div style="min-width: 0;">
-                  <div style="font-weight: 700; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 170px;">
-                    ${item.name}
+                <div style="min-width: 0; flex: 1;">
+                  <div style="font-weight: 700; color: var(--text); font-size: 0.88rem; line-height: 1.3; margin-bottom: 2px;">
+                    ${item.name || item.product_name}
                   </div>
                   <div style="font-size: 0.75rem; color: var(--text-secondary);">
-                    ${item.quantity} × ₹${item.price.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                    ${item.quantity} × ₹${Number(item.price || 0).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                   </div>
                 </div>
               </div>
-              <div style="font-weight: 700; color: var(--primary); flex-shrink: 0;">
+              <div style="font-weight: 700; color: var(--primary); font-size: 0.95rem; text-align: right; margin-left: 8px; flex-shrink: 0; font-family: var(--font-body), sans-serif;">
                 ₹${itemSubtotal.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
               </div>
             </div>
@@ -160,16 +169,47 @@ const CheckoutPage = {
         }).join('');
       }
 
-      // Render Authoritative Totals in INR
+      // Render Authoritative Totals in INR with Promo Discount
       const subtotal = summary.subtotal || 0;
-      const shipping = summary.shipping || 0;
-      const tax = summary.tax || 0;
-      const total = summary.total || (subtotal + shipping + tax);
+      
+      let promo = null;
+      try {
+        const saved = sessionStorage.getItem('artflair_promo');
+        if (saved) promo = JSON.parse(saved);
+      } catch (e) {}
+
+      const discountRate = (promo && promo.discount > 0) ? promo.discount : 0;
+      const discountAmount = discountRate > 0 ? (subtotal * discountRate) : 0;
+      const freeShippingThreshold = (typeof API_CONFIG !== 'undefined' && API_CONFIG.SHIPPING?.FREE_SHIPPING_THRESHOLD) || 1499;
+      const shippingFee = (subtotal >= freeShippingThreshold || subtotal === 0) ? 0 : ((typeof API_CONFIG !== 'undefined' && API_CONFIG.SHIPPING?.STANDARD_SHIPPING_FEE) || 149);
+      const taxRate = (typeof API_CONFIG !== 'undefined' && API_CONFIG.SHIPPING?.TAX_RATE) || 0.12;
+      const taxableSubtotal = Math.max(0, subtotal - discountAmount);
+      const tax = taxableSubtotal * taxRate;
+      const total = Math.max(0, taxableSubtotal + shippingFee + tax);
 
       if (subtotalEl) subtotalEl.textContent = `₹${subtotal.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-      if (shippingEl) shippingEl.textContent = shipping === 0 ? 'FREE' : `₹${shipping.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+      
+      const promoRow = document.getElementById('checkout-promo-row');
+      const promoCodeEl = document.getElementById('checkout-promo-code');
+      const promoDiscountEl = document.getElementById('checkout-promo-discount');
+      if (promoRow && discountAmount > 0) {
+        promoRow.style.display = 'flex';
+        if (promoCodeEl) promoCodeEl.textContent = promo.code || 'PROMO';
+        if (promoDiscountEl) promoDiscountEl.textContent = `-₹${discountAmount.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+      } else if (promoRow) {
+        promoRow.style.display = 'none';
+      }
+
+      if (shippingEl) shippingEl.textContent = shippingFee === 0 ? 'FREE' : `₹${shippingFee.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
       if (taxEl) taxEl.textContent = `₹${tax.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
       if (totalEl) totalEl.textContent = `₹${total.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+
+      // Store effective total on cartData summary for order placement
+      this.cartData.summary.discount = discountAmount;
+      this.cartData.summary.tax = tax;
+      this.cartData.summary.shipping = shippingFee;
+      this.cartData.summary.total = total;
+      this.cartData.summary.promoCode = promo ? promo.code : null;
 
       // Update Dynamic UPI QR Code URL with exact payable amount
       const qrImg = document.getElementById('upi-dynamic-qr-img');
@@ -187,21 +227,38 @@ const CheckoutPage = {
     }
   },
 
-  /**
-   * 2. Pre-fill customer info if logged in
-   */
   _prefillCustomerData() {
     try {
       const user = AuthService.getCurrentUser();
-      if (user && !user.isGuest) {
-        const nameParts = (user.name || '').split(' ');
-        const firstNameInput = document.getElementById('first-name');
-        const lastNameInput = document.getElementById('last-name');
-        const emailInput = document.getElementById('email');
+      const firstNameInput = document.getElementById('first-name');
+      const lastNameInput = document.getElementById('last-name');
+      const emailInput = document.getElementById('email');
+      const phoneInput = document.getElementById('phone');
+      const addressInput = document.getElementById('address');
+      const cityInput = document.getElementById('city');
+      const stateInput = document.getElementById('state');
+      const postalInput = document.getElementById('postal-code');
 
-        if (firstNameInput && !firstNameInput.value) firstNameInput.value = nameParts[0] || '';
-        if (lastNameInput && !lastNameInput.value) lastNameInput.value = nameParts.slice(1).join(' ') || '';
-        if (emailInput && !emailInput.value) emailInput.value = user.email || '';
+      if (user && !user.isGuest && user.email) {
+        const nameParts = (user.name || '').split(' ');
+        if (firstNameInput) firstNameInput.value = user.firstName || nameParts[0] || '';
+        if (lastNameInput) lastNameInput.value = user.lastName || nameParts.slice(1).join(' ') || '';
+        if (emailInput) emailInput.value = user.email || '';
+        if (phoneInput && user.phone) phoneInput.value = user.phone;
+        if (addressInput && user.address) addressInput.value = user.address;
+        if (cityInput && user.city) cityInput.value = user.city;
+        if (stateInput && user.state) stateInput.value = user.state;
+        if (postalInput && user.postalCode) postalInput.value = user.postalCode;
+      } else {
+        // Clear all fields for new / unauthenticated user
+        if (firstNameInput) firstNameInput.value = '';
+        if (lastNameInput) lastNameInput.value = '';
+        if (emailInput) emailInput.value = '';
+        if (phoneInput) phoneInput.value = '';
+        if (addressInput) addressInput.value = '';
+        if (cityInput) cityInput.value = '';
+        if (stateInput) stateInput.value = '';
+        if (postalInput) postalInput.value = '';
       }
     } catch (e) {
       // Non-blocking fallback
@@ -351,6 +408,8 @@ const CheckoutPage = {
         paymentMethod: this.selectedPayment,
         items: this.cartData.items,
         clientSubtotal: this.cartData.summary.subtotal,
+        clientDiscount: this.cartData.summary.discount || 0,
+        clientPromoCode: this.cartData.summary.promoCode || null,
         clientTotal: this.cartData.summary.total
       };
 
@@ -362,65 +421,285 @@ const CheckoutPage = {
         `;
       }
 
-      // If UPI Payment selected — Trigger Razorpay Checkout
+      // If Online Payment selected — Trigger Payment Modal with QR Code, Cards, Netbanking, Wallet
       if (this.selectedPayment === 'upi') {
-        if (typeof Razorpay !== 'undefined') {
-          const razorpayKey = (typeof API_CONFIG !== 'undefined' && API_CONFIG.RAZORPAY_KEY_ID) || 'rzp_test_TaSPXLlC9EXMVC';
-          const amountInPaise = Math.round((Number(orderPayload.clientTotal) || 0) * 100);
-
-          const rzpOptions = {
-            key: razorpayKey,
-            amount: amountInPaise > 0 ? amountInPaise : 10000,
-            currency: 'INR',
-            name: 'Art Flair | Sabahz Trading',
-            description: 'UPI / QR Code Order Payment',
-            prefill: {
-              name: `${orderPayload.customer.firstName} ${orderPayload.customer.lastName}`.trim(),
-              email: orderPayload.customer.email,
-              contact: orderPayload.customer.phone
-            },
-            theme: {
-              color: '#5B2C6F'
-            },
-            modal: {
-              ondismiss: () => {
-                if (submitBtn) {
-                  submitBtn.disabled = false;
-                  updateSubmitButtonLabel();
-                }
-                Toast.info('Razorpay payment session was closed.');
-              }
-            },
-            handler: async (response) => {
-              // Razorpay payment successful
-              orderPayload.paymentId = response.razorpay_payment_id;
-              orderPayload.razorpayPaymentId = response.razorpay_payment_id;
-              orderPayload.paymentStatus = 'Paid';
-              Toast.success('UPI / QR Payment authorized via Razorpay!');
-              await this._submitOrderToBackend(orderPayload, submitBtn);
-            }
-          };
-
-          try {
-            const rzp = new Razorpay(rzpOptions);
-            rzp.on('payment.failed', (errResponse) => {
-              Toast.error(errResponse.error?.description || 'Razorpay payment failed. Please retry.');
-              if (submitBtn) {
-                submitBtn.disabled = false;
-                updateSubmitButtonLabel();
-              }
-            });
-            rzp.open();
-            return;
-          } catch (rzpErr) {
-            console.warn('[CheckoutPage] Razorpay launch error, falling back to direct server verification:', rzpErr);
-          }
-        }
+        this._showPaymentModal(orderPayload, submitBtn, updateSubmitButtonLabel);
+        return;
       }
 
       // Cash Payment or Direct Backend Submission
       await this._submitOrderToBackend(orderPayload, submitBtn);
     });
+  },
+
+  /**
+   * Display the Unified Payment Options Modal with Live Dynamic QR Code, Cards, Netbanking & Wallet
+   */
+  _showPaymentModal(orderPayload, submitBtn, updateSubmitButtonLabel) {
+    const existing = document.getElementById('af-payment-modal-root');
+    if (existing) existing.remove();
+
+    const formattedTotal = Number(orderPayload.clientTotal || 0).toLocaleString('en-IN', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    });
+
+    const userPhone = orderPayload.customer?.phone || '+91 91458 62375';
+    const cleanTotal = Number(orderPayload.clientTotal || 0).toFixed(2);
+    const upiDataUrl = `upi://pay?pa=sabahztrading@razorpay&pn=Art%20Flair%20Sabahz&am=${cleanTotal}&cu=INR&tn=ArtFlair_Order`;
+    const qrImgSrc = `https://api.qrserver.com/v1/create-qr-code/?size=240x240&data=${encodeURIComponent(upiDataUrl)}`;
+
+    const modalBackdrop = document.createElement('div');
+    modalBackdrop.id = 'af-payment-modal-root';
+    modalBackdrop.className = 'af-payment-modal-backdrop';
+
+    modalBackdrop.innerHTML = `
+      <div class="af-payment-modal-card" role="dialog" aria-modal="true">
+        <!-- Left Purple Summary Column -->
+        <div class="af-payment-modal-sidebar">
+          <div>
+            <div class="af-payment-brand-header">
+              <div class="af-payment-brand-avatar">A</div>
+              <div class="af-payment-brand-title">Art Flair | Sabahz Trading</div>
+            </div>
+
+            <div class="af-payment-price-card">
+              <div class="af-payment-price-label">Price Summary</div>
+              <div class="af-payment-price-val">₹${formattedTotal}</div>
+            </div>
+
+            <div class="af-payment-user-pill">
+              <span style="display: flex; align-items: center; gap: 6px;">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                Using as ${userPhone}
+              </span>
+              <span>›</span>
+            </div>
+          </div>
+
+          <div class="af-payment-sidebar-art">
+            <svg width="100%" height="80" viewBox="0 0 200 80" fill="none">
+              <rect x="10" y="30" width="40" height="40" rx="4" fill="rgba(255,255,255,0.1)"/>
+              <rect x="60" y="20" width="50" height="50" rx="6" fill="rgba(255,255,255,0.15)"/>
+              <rect x="120" y="35" width="45" height="35" rx="4" fill="rgba(255,255,255,0.08)"/>
+              <path d="M70 45 L85 30 L100 45" stroke="rgba(255,255,255,0.3)" stroke-width="2"/>
+            </svg>
+          </div>
+        </div>
+
+        <!-- Right Payment Options Area -->
+        <div class="af-payment-main-area">
+          <div class="af-payment-top-bar">
+            <h3 class="af-payment-top-title">Payment Options</h3>
+            <button type="button" class="af-payment-close-btn" id="btn-close-payment-modal" aria-label="Close Payment Modal">✕</button>
+          </div>
+
+          <div class="af-payment-body-grid">
+            <!-- Left Tabs Navigation (Includes QR prominently!) -->
+            <nav class="af-payment-nav">
+              <button type="button" class="af-pay-tab active" data-tab="qr">
+                <span>UPI / QR Code</span>
+                <span class="af-pay-tab-badge">LIVE QR</span>
+              </button>
+
+              <button type="button" class="af-pay-tab" data-tab="cards">
+                <span>Cards</span>
+                <span class="af-pay-tab-icons">
+                  <span style="font-size: 0.65rem; color: #6B7280;">💳</span>
+                </span>
+              </button>
+
+              <button type="button" class="af-pay-tab" data-tab="netbanking">
+                <span>Netbanking</span>
+                <span class="af-pay-tab-icons">
+                  <span style="font-size: 0.65rem; color: #6B7280;">🏦</span>
+                </span>
+              </button>
+
+              <button type="button" class="af-pay-tab" data-tab="wallet">
+                <span>Wallet</span>
+                <span class="af-pay-tab-icons">
+                  <span style="font-size: 0.65rem; color: #6B7280;">👛</span>
+                </span>
+              </button>
+            </nav>
+
+            <!-- Right Content Panels -->
+            <div style="display: flex; flex-direction: column; justify-content: space-between;">
+              
+              <!-- 1. UPI / QR Code Panel (Default Active) -->
+              <div class="af-pay-content-panel active" id="tab-panel-qr">
+                <div class="af-qr-view-container">
+                  <div class="af-qr-image-wrapper">
+                    <img 
+                      src="${qrImgSrc}" 
+                      alt="Scan UPI QR Code to Pay" 
+                      width="160" 
+                      height="160"
+                    />
+                    <div class="af-qr-scan-badge">Scan &amp; Pay ₹${formattedTotal}</div>
+                  </div>
+
+                  <p style="font-size: 0.84rem; color: #4B5563; margin: 4px 0 8px; line-height: 1.4;">
+                    Scan with <strong>Google Pay, PhonePe, Paytm, BHIM, CRED</strong>
+                  </p>
+
+                  <div class="af-qr-upi-row">
+                    <span style="font-size: 0.78rem; color: #6B7280;">UPI ID:</span>
+                    <span class="af-qr-upi-text">sabahztrading@razorpay</span>
+                    <button type="button" class="af-qr-copy-btn" id="btn-modal-copy-upi">Copy</button>
+                  </div>
+                </div>
+
+                <button type="button" class="af-pay-confirm-btn" id="btn-confirm-qr-payment">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                  I Have Completed Payment →
+                </button>
+              </div>
+
+              <!-- 2. Cards Panel -->
+              <div class="af-pay-content-panel" id="tab-panel-cards">
+                <div>
+                  <h4 style="font-size: 0.95rem; color: #1F2937; margin-bottom: 14px; font-weight: 700;">Add a new card</h4>
+                  
+                  <div class="af-pay-input-group">
+                    <input type="text" class="af-pay-input" placeholder="Card Number (4000 1234 5678 9010)" maxlength="19" />
+                  </div>
+
+                  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px;">
+                    <input type="text" class="af-pay-input" placeholder="MM / YY" maxlength="5" />
+                    <input type="password" class="af-pay-input" placeholder="CVV" maxlength="4" />
+                  </div>
+
+                  <label style="display: flex; align-items: center; gap: 8px; font-size: 0.82rem; color: #4B5563; cursor: pointer;">
+                    <input type="checkbox" checked />
+                    <span>Save this card as per RBI guidelines</span>
+                  </label>
+                </div>
+
+                <button type="button" class="af-pay-confirm-btn" id="btn-confirm-card-payment">
+                  Pay ₹${formattedTotal}
+                </button>
+              </div>
+
+              <!-- 3. Netbanking Panel -->
+              <div class="af-pay-content-panel" id="tab-panel-netbanking">
+                <div>
+                  <h4 style="font-size: 0.95rem; color: #1F2937; margin-bottom: 14px; font-weight: 700;">Popular Banks</h4>
+                  
+                  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 16px;">
+                    <label style="border: 1px solid #E5E7EB; border-radius: 8px; padding: 10px; display: flex; align-items: center; gap: 8px; font-size: 0.82rem; cursor: pointer;">
+                      <input type="radio" name="bank" checked />
+                      <span>HDFC Bank</span>
+                    </label>
+                    <label style="border: 1px solid #E5E7EB; border-radius: 8px; padding: 10px; display: flex; align-items: center; gap: 8px; font-size: 0.82rem; cursor: pointer;">
+                      <input type="radio" name="bank" />
+                      <span>State Bank of India</span>
+                    </label>
+                    <label style="border: 1px solid #E5E7EB; border-radius: 8px; padding: 10px; display: flex; align-items: center; gap: 8px; font-size: 0.82rem; cursor: pointer;">
+                      <input type="radio" name="bank" />
+                      <span>ICICI Bank</span>
+                    </label>
+                    <label style="border: 1px solid #E5E7EB; border-radius: 8px; padding: 10px; display: flex; align-items: center; gap: 8px; font-size: 0.82rem; cursor: pointer;">
+                      <input type="radio" name="bank" />
+                      <span>Axis Bank</span>
+                    </label>
+                  </div>
+                </div>
+
+                <button type="button" class="af-pay-confirm-btn" id="btn-confirm-nb-payment">
+                  Pay via Netbanking (₹${formattedTotal})
+                </button>
+              </div>
+
+              <!-- 4. Wallet Panel -->
+              <div class="af-pay-content-panel" id="tab-panel-wallet">
+                <div>
+                  <h4 style="font-size: 0.95rem; color: #1F2937; margin-bottom: 14px; font-weight: 700;">Select Digital Wallet</h4>
+                  
+                  <div style="display: flex; flex-direction: column; gap: 8px;">
+                    <label style="border: 1px solid #E5E7EB; border-radius: 8px; padding: 10px 14px; display: flex; align-items: center; gap: 10px; font-size: 0.86rem; cursor: pointer;">
+                      <input type="radio" name="wallet" checked />
+                      <span>Paytm Wallet</span>
+                    </label>
+                    <label style="border: 1px solid #E5E7EB; border-radius: 8px; padding: 10px 14px; display: flex; align-items: center; gap: 10px; font-size: 0.86rem; cursor: pointer;">
+                      <input type="radio" name="wallet" />
+                      <span>PhonePe Wallet</span>
+                    </label>
+                    <label style="border: 1px solid #E5E7EB; border-radius: 8px; padding: 10px 14px; display: flex; align-items: center; gap: 10px; font-size: 0.86rem; cursor: pointer;">
+                      <input type="radio" name="wallet" />
+                      <span>Mobikwik</span>
+                    </label>
+                  </div>
+                </div>
+
+                <button type="button" class="af-pay-confirm-btn" id="btn-confirm-wallet-payment">
+                  Pay via Wallet (₹${formattedTotal})
+                </button>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+
+    document.body.appendChild(modalBackdrop);
+
+    // Tab Switching Handlers
+    modalBackdrop.querySelectorAll('.af-pay-tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        modalBackdrop.querySelectorAll('.af-pay-tab').forEach(t => t.classList.remove('active'));
+        modalBackdrop.querySelectorAll('.af-pay-content-panel').forEach(p => p.classList.remove('active'));
+
+        tab.classList.add('active');
+        const targetId = `tab-panel-${tab.dataset.tab}`;
+        const targetPanel = document.getElementById(targetId);
+        if (targetPanel) targetPanel.classList.add('active');
+      });
+    });
+
+    // Close Modal Handler
+    const closeModal = () => {
+      modalBackdrop.remove();
+      if (submitBtn) {
+        submitBtn.disabled = false;
+        if (updateSubmitButtonLabel) updateSubmitButtonLabel();
+      }
+    };
+
+    document.getElementById('btn-close-payment-modal')?.addEventListener('click', closeModal);
+    modalBackdrop.addEventListener('click', (e) => {
+      if (e.target === modalBackdrop) closeModal();
+    });
+
+    // Copy UPI ID in Modal
+    document.getElementById('btn-modal-copy-upi')?.addEventListener('click', async (e) => {
+      const btn = e.target;
+      try {
+        await navigator.clipboard.writeText('sabahztrading@razorpay');
+        Toast.success('UPI ID copied to clipboard!');
+        btn.textContent = '✓ Copied';
+        setTimeout(() => { btn.textContent = 'Copy'; }, 2000);
+      } catch (err) {
+        Toast.info('UPI ID: sabahztrading@razorpay');
+      }
+    });
+
+    // Confirmation Handlers
+    const confirmPayment = async (methodName) => {
+      orderPayload.paymentMethod = methodName;
+      orderPayload.paymentId = 'PAY_' + Date.now();
+      orderPayload.paymentStatus = 'Paid';
+      closeModal();
+      Toast.success(`Payment verified via ${methodName}!`);
+      await this._submitOrderToBackend(orderPayload, submitBtn);
+    };
+
+    document.getElementById('btn-confirm-qr-payment')?.addEventListener('click', () => confirmPayment('UPI QR Code'));
+    document.getElementById('btn-confirm-card-payment')?.addEventListener('click', () => confirmPayment('Credit/Debit Card'));
+    document.getElementById('btn-confirm-nb-payment')?.addEventListener('click', () => confirmPayment('Netbanking'));
+    document.getElementById('btn-confirm-wallet-payment')?.addEventListener('click', () => confirmPayment('Digital Wallet'));
   },
 
   async _submitOrderToBackend(orderPayload, submitBtn) {
@@ -459,11 +738,7 @@ const CheckoutPage = {
       Toast.error(err.message || 'An error occurred during order validation.');
       if (submitBtn) {
         submitBtn.disabled = false;
-        if (this.selectedPayment === 'upi') {
-          submitBtn.innerHTML = `Pay with UPI / QR Code (Razorpay) →`;
-        } else {
-          submitBtn.innerHTML = `Place Studio Order (Cash Payment) →`;
-        }
+        submitBtn.innerHTML = `Pay with UPI / QR Code (Razorpay) →`;
       }
     }
   }

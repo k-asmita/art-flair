@@ -27,10 +27,14 @@ const ProductCardComponent = {
       currency: 'INR'
     }).format(priceNumber);
 
-    // Image URL pattern: /static/images/${product.product_image}
-    const rawImage = String(product.product_image || '').replace(/^\/+/, '');
-    const imageSrc = `/static/images/${rawImage}`;
-    const fallbackPath = `Products/${product.category_name || product.category || 'Accessories'}/${rawImage.split('/').pop()}`;
+    // Robust Image URL resolution
+    const rawImage = String(product.product_image || product.image || product.image_url || '').replace(/^\/+/, '');
+    const cat = product.category_name || product.category || 'Accessories';
+    const filename = rawImage.split('/').pop() || 'acrylic.jpg';
+    const fallbackPath = `Products/${cat}/${filename}`;
+    const imageSrc = (typeof resolveProductImageUrl === 'function') 
+      ? resolveProductImageUrl(product) 
+      : (rawImage.startsWith('Products/') ? rawImage : `/static/images/${rawImage}`);
 
     // Rating star generation
     const fullStars = Math.floor(ratingValue);
@@ -45,7 +49,7 @@ const ProductCardComponent = {
               alt="${productName}" 
               class="product-card-img" 
               loading="lazy" 
-              onerror="console.error('Image load failed for URL:', this.src); this.onerror=null; this.src='${fallbackPath}';"
+              onerror="this.onerror=null; this.src='${fallbackPath}';"
             />
           </a>
         </div>

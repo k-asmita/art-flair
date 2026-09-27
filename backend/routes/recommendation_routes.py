@@ -37,3 +37,40 @@ def get_product_recommendations(product_id):
         "productId": product_id,
         "pairs": recommended
     })
+
+
+@recommendation_bp.route('/ai-advisor', methods=['POST'])
+def get_gemini_ai_advisor():
+    """Generates dynamic AI supply recommendations and studio advice via Google Gemini API."""
+    from services.gemini_service import GeminiService
+    from services.product_service import ProductService
+
+    data = request.get_json() or {}
+    catalog = ProductService.get_products({"page_size": 30}).get('products', [])
+    result = GeminiService.recommend_supply_kit(data, catalog_products=catalog)
+
+    # If Gemini recommended product IDs, resolve them from catalog
+    if result.get("recommendedProductIds"):
+        recommended_items = [p for p in catalog if p.get('id') in result["recommendedProductIds"]]
+        if recommended_items:
+            result["bundle"] = {
+                "items": recommended_items,
+                "totalPrice": sum(float(i.get('price', 0)) for i in recommended_items)
+            }
+
+    return api_response(result)
+
+
+@recommendation_bp.route('/compatibility', methods=['POST'])
+def check_medium_compatibility():
+    """Checks chemical and archival compatibility between mediums using Gemini AI."""
+    from services.gemini_service import GeminiService
+
+    data = request.get_json() or {}
+    medium_a = data.get('mediumA', 'Oil Paint')
+    medium_b = data.get('mediumB', 'Acrylic Gesso')
+    substrate = data.get('substrate', 'Belgian Linen')
+
+    result = GeminiService.check_medium_compatibility(medium_a, medium_b, substrate=substrate)
+    return api_response(result)
+

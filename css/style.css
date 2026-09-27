@@ -1,0 +1,82 @@
+/**
+ * Art Flair - Master Storefront Stylesheet
+ * Developed for Sabahz Trading
+ * 
+ * Centralized import & consistent product card image rules across storefront.
+ */
+
+@import url('variables.css');
+@import url('base.css');
+@import url('layout.css');
+@import url('components.css');
+
+/* ==========================================================================
+   REUSABLE UNIFORM PRODUCT CARD IMAGE CONTAINER SPECIFICATION
+   Applied consistently across Shop, Homepage Grids, Wishlist, Recommendations
+   ========================================================================== */
+.product-card-image-wrap,
+.product-card-media,
+.wishlist-card-media {
+  position: relative;
+  width: 100%;
+  height: 220px;
+  min-height: 220px;
+  max-height: 220px;
+  background-color: var(--bg-alt, #FBF8F3);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px;
+  border-bottom: 1px solid var(--border-light, #EFE8DE);
+  box-sizing: border-box;
+}
+
+.product-card-img-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.product-card-img,
+.wishlist-card-img {
+  width: 100%;
+  height: 100%;
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  object-position: center;
+  transition: transform var(--transition-slow, 0.4s ease);
+}
+
+.product-card:hover .product-card-img,
+.wishlist-item-card:hover .wishlist-card-img {
+  transform: scale(1.06);
+}
+
+/* Tablet Breakpoint (max-width: 992px / 768px) */
+@media (max-width: 992px) {
+  .product-card-image-wrap,
+  .product-card-media,
+  .wishlist-card-media {
+    height: 200px;
+    min-height: 200px;
+    max-height: 200px;
+    padding: 10px;
+  }
+}
+
+/* Mobile Breakpoint (max-width: 576px) */
+@media (max-width: 576px) {
+  .product-card-image-wrap,
+  .product-card-media,
+  .wishlist-card-media {
+    height: 180px;
+    min-height: 180px;
+    max-height: 180px;
+    padding: 8px;
+  }
+}

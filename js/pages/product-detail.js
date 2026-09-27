@@ -269,11 +269,11 @@ const ProductDetailPage = {
             <a href="products.html?category=${product.categoryId}" class="btn btn-outline btn-sm">View More in ${product.category} →</a>
           </div>
 
-          <div class="products-showcase-grid" id="related-products-grid">
-            <div class="skeleton skeleton-card"></div>
-            <div class="skeleton skeleton-card"></div>
-            <div class="skeleton skeleton-card"></div>
-            <div class="skeleton skeleton-card"></div>
+          <div class="products-showcase-grid grid grid-cols-4 gap-lg" id="related-products-grid">
+            <div class="skeleton" style="height: 360px; border-radius: 12px;"></div>
+            <div class="skeleton" style="height: 360px; border-radius: 12px;"></div>
+            <div class="skeleton" style="height: 360px; border-radius: 12px;"></div>
+            <div class="skeleton" style="height: 360px; border-radius: 12px;"></div>
           </div>
         </section>
 

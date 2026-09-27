@@ -50,13 +50,15 @@ const API_CONFIG = {
     LOGOUT: '/auth/logout',
     USER_PROFILE: '/auth/profile',
     UPDATE_PROFILE: '/auth/profile',
+    FORGOT_PASSWORD: '/auth/forgot-password',
+    RESET_PASSWORD: '/auth/reset-password',
 
-    // AI/ML Recommendation Service (Backend Model Results)
+    // AI/ML Recommendation Service (Backend Model Results & Google Gemini AI)
     AI_RECOMMENDATIONS: (id) => `/recommendations/products/${id}`,
     AI_RECOMMENDATIONS_USER: '/recommendations/user',
     AI_RECOMMENDATIONS_PRODUCT: (id) => `/recommendations/products/${id}`,
-    AI_MATCHER_RECOMMEND: '/ai/recommend-medium-kit',
-    AI_COMPATIBILITY_CHECK: '/ai/check-compatibility',
+    AI_MATCHER_RECOMMEND: '/recommendations/ai-advisor',
+    AI_COMPATIBILITY_CHECK: '/recommendations/compatibility',
 
     // Admin Management Endpoints
     ADMIN_STATS: '/admin/stats',
@@ -70,6 +72,10 @@ const API_CONFIG = {
     ADMIN_UPLOAD_IMAGE: '/admin/upload-image'
   },
 
+  // Google Gemini AI Recommendation Engine
+  GEMINI_API_KEY: '',
+  GEMINI_MODEL: 'gemini-1.5-flash',
+
   // Business Rules in Indian Rupees (INR)
   SHIPPING: {
     FREE_SHIPPING_THRESHOLD: 1499.00, // ₹1,499 for free shipping
@@ -77,9 +83,28 @@ const API_CONFIG = {
     TAX_RATE: 0.12                   // 12% GST on artist supplies
   },
 
+  // Centralized Storefront Promotional Code & Banner Configuration
+  PROMO: {
+    FEATURED_CODE: 'SABAHZ10',
+    DISCOUNT_PERCENT: 10,
+    DISCOUNT_RATE: 0.10,
+    MIN_ORDER: 0
+  },
+
   // Payment Gateway Configuration
   RAZORPAY_KEY_ID: 'rzp_test_TaSPXLlC9EXMVC'
 };
+
+// Helpers for Promotional Banner Content
+function getPromoAnnouncementHTML() {
+  const p = (typeof API_CONFIG !== 'undefined' && API_CONFIG.PROMO) ? API_CONFIG.PROMO : { FEATURED_CODE: 'SABAHZ10', DISCOUNT_PERCENT: 10 };
+  return `Use code <strong class="announcement-code-pill" title="Click to copy code" data-copy-code="${p.FEATURED_CODE}">${p.FEATURED_CODE}</strong> for ${p.DISCOUNT_PERCENT}% off your first order!`;
+}
+
+function getCartPromoHintHTML() {
+  const p = (typeof API_CONFIG !== 'undefined' && API_CONFIG.PROMO) ? API_CONFIG.PROMO : { FEATURED_CODE: 'SABAHZ10', DISCOUNT_PERCENT: 10 };
+  return `<div class="cart-promo-hint"><span>💡 Have a code? Try <strong class="cart-promo-pill" role="button" tabindex="0" title="Click to apply ${p.FEATURED_CODE}" data-apply-code="${p.FEATURED_CODE}">${p.FEATURED_CODE}</strong> for ${p.DISCOUNT_PERCENT}% off!</span></div>`;
+}
 
 // Helper for clean INR formatting
 function formatINR(amount) {

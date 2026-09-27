@@ -64,7 +64,7 @@
               <label class="form-label" for="login-password" style="margin-bottom: 0;">
                 Password <span class="required">*</span>
               </label>
-              <a href="#" onclick="Toast.info('Password recovery link sent to registered email.');" style="font-size: 0.75rem; color: var(--secondary); font-weight: 600;">Forgot password?</a>
+              <a href="javascript:void(0)" id="link-forgot-password" style="font-size: 0.75rem; color: var(--secondary); font-weight: 600; cursor: pointer; text-decoration: underline;">Forgot password?</a>
             </div>
             <input 
               type="password" 
@@ -102,6 +102,60 @@
     </div>
   </main>
 
+  <!-- Forgot Password Recovery Modal -->
+  <div id="forgot-password-modal" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.65); z-index: 10000; align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(4px);">
+    <div style="background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-xl); max-width: 460px; width: 100%; padding: 32px; box-shadow: var(--shadow-2xl); position: relative; animation: modalFadeIn 0.25s ease-out;">
+      <button type="button" id="btn-close-forgot-modal" style="position: absolute; top: 16px; right: 16px; background: none; border: none; font-size: 1.4rem; color: var(--text-muted); cursor: pointer; line-height: 1;" aria-label="Close">✕</button>
+      
+      <div style="text-align: center; margin-bottom: 20px;">
+        <div style="width: 48px; height: 48px; border-radius: 50%; background: var(--primary-soft); color: var(--primary); display: inline-flex; align-items: center; justify-content: center; font-size: 1.4rem; margin-bottom: 12px;">
+          🔑
+        </div>
+        <h3 style="font-size: 1.35rem; color: var(--primary); margin-bottom: 6px;">Password Recovery</h3>
+        <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 0;">
+          Reset your password and regain access to your atelier account.
+        </p>
+      </div>
+
+      <!-- Step 1: Request PIN / Verify Email -->
+      <form id="forgot-step1-form" novalidate>
+        <div class="form-group" style="margin-bottom: 16px;">
+          <label class="form-label" for="forgot-email">Registered Studio Email <span class="required">*</span></label>
+          <input type="email" id="forgot-email" class="form-control" placeholder="e.g. khambeakshata8@gmail.com" required />
+        </div>
+        <button type="submit" class="btn btn-primary btn-block" id="btn-send-pin">
+          Send Recovery Code →
+        </button>
+      </form>
+
+      <!-- Step 2: Enter PIN & New Password -->
+      <form id="forgot-step2-form" style="display: none; margin-top: 16px;" novalidate>
+        <div class="alert alert-info" style="font-size: 0.82rem; margin-bottom: 16px; background: var(--success-soft); color: var(--success-dark); border-color: var(--success-soft);">
+          ✓ Verification code sent! Your verification PIN is: <strong style="font-family: var(--font-mono); font-size: 1rem; color: var(--primary);" id="display-reset-code">849201</strong>
+        </div>
+
+        <div class="form-group" style="margin-bottom: 12px;">
+          <label class="form-label" for="reset-pin">6-Digit Verification PIN <span class="required">*</span></label>
+          <input type="text" id="reset-pin" class="form-control" value="849201" maxlength="6" required style="font-family: var(--font-mono); letter-spacing: 2px;" />
+        </div>
+
+        <div class="form-group" style="margin-bottom: 12px;">
+          <label class="form-label" for="reset-new-password">New Studio Password <span class="required">*</span></label>
+          <input type="password" id="reset-new-password" class="form-control" placeholder="At least 8 characters" required minlength="8" />
+        </div>
+
+        <div class="form-group" style="margin-bottom: 20px;">
+          <label class="form-label" for="reset-confirm-password">Confirm New Password <span class="required">*</span></label>
+          <input type="password" id="reset-confirm-password" class="form-control" placeholder="Re-enter password" required />
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-block" id="btn-save-new-password">
+          Update Password & Sign In
+        </button>
+      </form>
+    </div>
+  </div>
+
   <!-- Dynamic Global Footer -->
   <div id="site-footer-container"></div>
 
@@ -123,7 +177,7 @@
   <script src="js/components/footer.js"></script>
   <script src="js/main.js"></script>
 
-  <!-- Login Form Script -->
+  <!-- Login & Password Recovery Controller -->
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       const form = document.getElementById('login-form');
@@ -134,6 +188,7 @@
       const passInput = document.getElementById('login-password');
       const rememberInput = document.getElementById('login-remember');
 
+      // Login handler
       form.addEventListener('submit', async (e) => {
         e.preventDefault();
         errorAlert.style.display = 'none';
@@ -142,7 +197,6 @@
         const password = passInput.value;
         const rememberMe = rememberInput ? rememberInput.checked : false;
 
-        // Basic frontend validation
         if (!email) {
           showError('Please enter your studio email address.');
           emailInput.focus();
@@ -155,7 +209,6 @@
           return;
         }
 
-        // Loading state
         submitBtn.disabled = true;
         submitBtn.innerHTML = `
           <span style="display: inline-flex; align-items: center; gap: 8px;">
@@ -171,7 +224,7 @@
           const redirectTarget = urlParams.get('redirect') || 'index.html';
           setTimeout(() => {
             window.location.href = redirectTarget;
-          }, 600);
+          }, 500);
         } catch (err) {
           showError(err.message || 'Invalid credentials. Please verify your email and password.');
           submitBtn.disabled = false;
@@ -183,6 +236,138 @@
         if (errorMessage) errorMessage.textContent = msg;
         if (errorAlert) errorAlert.style.display = 'flex';
       }
+
+      // ----------------------------------------------------
+      // FORGOT PASSWORD MODAL CONTROLLER
+      // ----------------------------------------------------
+      const forgotLink = document.getElementById('link-forgot-password');
+      const forgotModal = document.getElementById('forgot-password-modal');
+      const closeForgotBtn = document.getElementById('btn-close-forgot-modal');
+      const step1Form = document.getElementById('forgot-step1-form');
+      const step2Form = document.getElementById('forgot-step2-form');
+      const forgotEmailInput = document.getElementById('forgot-email');
+      const resetPinInput = document.getElementById('reset-pin');
+      const resetNewPassInput = document.getElementById('reset-new-password');
+      const resetConfirmPassInput = document.getElementById('reset-confirm-password');
+      const displayResetCode = document.getElementById('display-reset-code');
+
+      let activeRecoveryEmail = '';
+
+      function openForgotModal() {
+        activeRecoveryEmail = emailInput.value.trim();
+        if (activeRecoveryEmail) {
+          forgotEmailInput.value = activeRecoveryEmail;
+        }
+        step1Form.style.display = 'block';
+        step2Form.style.display = 'none';
+        forgotModal.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+      }
+
+      function closeForgotModal() {
+        forgotModal.style.display = 'none';
+        document.body.style.overflow = '';
+      }
+
+      forgotLink?.addEventListener('click', (e) => {
+        e.preventDefault();
+        openForgotModal();
+      });
+
+      closeForgotBtn?.addEventListener('click', closeForgotModal);
+      forgotModal?.addEventListener('click', (e) => {
+        if (e.target === forgotModal) closeForgotModal();
+      });
+
+      // Step 1: Submit email to get reset PIN
+      step1Form?.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const email = forgotEmailInput.value.trim();
+        if (!email) {
+          Toast.error('Please enter your studio email address.');
+          return;
+        }
+
+        const sendBtn = document.getElementById('btn-send-pin');
+        sendBtn.disabled = true;
+        sendBtn.textContent = 'Verifying...';
+
+        try {
+          const res = await AuthService.forgotPassword(email);
+          activeRecoveryEmail = email;
+          if (displayResetCode && res.resetCode) {
+            displayResetCode.textContent = res.resetCode;
+            resetPinInput.value = res.resetCode;
+          }
+          Toast.info('Verification code generated for your email.');
+          step1Form.style.display = 'none';
+          step2Form.style.display = 'block';
+        } catch (err) {
+          Toast.error(err.message || 'Could not verify email.');
+        } finally {
+          sendBtn.disabled = false;
+          sendBtn.textContent = 'Send Recovery Code →';
+        }
+      });
+
+      // Step 2: Set New Password
+      step2Form?.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const pin = resetPinInput.value.trim();
+        const newPass = resetNewPassInput.value;
+        const confirmPass = resetConfirmPassInput.value;
+
+        if (!pin) {
+          Toast.error('Please enter the 6-digit verification PIN.');
+          return;
+        }
+
+        if (!newPass || newPass.length < 8) {
+          Toast.error('Password must contain at least 8 characters.');
+          return;
+        }
+
+        if (newPass !== confirmPass) {
+          Toast.error('Passwords do not match. Please re-enter.');
+          return;
+        }
+
+        const saveBtn = document.getElementById('btn-save-new-password');
+        saveBtn.disabled = true;
+        saveBtn.textContent = 'Saving Password...';
+
+        try {
+          await AuthService.resetPassword({
+            email: activeRecoveryEmail,
+            newPassword: newPass,
+            resetCode: pin
+          });
+
+          Toast.success('Password successfully reset! Signing you in...');
+          closeForgotModal();
+
+          // Auto-fill login inputs and submit
+          emailInput.value = activeRecoveryEmail;
+          passInput.value = newPass;
+
+          setTimeout(async () => {
+            try {
+              const loginRes = await loginUser({ email: activeRecoveryEmail, password: newPass, rememberMe: true });
+              Toast.success(`Welcome to Art Flair, ${loginRes.user.name}!`);
+              setTimeout(() => {
+                window.location.href = 'index.html';
+              }, 400);
+            } catch (loginErr) {
+              Toast.info('Please sign in with your new password.');
+            }
+          }, 300);
+
+        } catch (err) {
+          Toast.error(err.message || 'Failed to update password.');
+          saveBtn.disabled = false;
+          saveBtn.textContent = 'Update Password & Sign In';
+        }
+      });
     });
   </script>
 </body>

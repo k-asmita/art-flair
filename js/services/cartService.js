@@ -73,11 +73,16 @@ const CartService = {
         await this.getCart();
         return response;
       }
-      throw new Error(response.message || 'Failed to remove item');
+      throw new Error(response?.message || 'Failed to remove item');
     } catch (error) {
       console.error('[CartService] Error removing item:', error);
       throw error;
     }
+  },
+
+  // Alias for removeFromCart
+  async removeFromCart(cartItemId) {
+    return this.removeItem(cartItemId);
   },
 
   // Clear entire database cart
@@ -88,7 +93,7 @@ const CartService = {
         await this.getCart();
         return response;
       }
-      throw new Error(response.message || 'Failed to clear cart');
+      throw new Error(response?.message || 'Failed to clear cart');
     } catch (error) {
       console.error('[CartService] Error clearing cart:', error);
       throw error;
@@ -100,5 +105,10 @@ const CartService = {
     window.dispatchEvent(new CustomEvent('cart:updated', {
       detail: cartData
     }));
+    if (typeof HeaderComponent !== 'undefined' && typeof HeaderComponent.updateCartBadge === 'function') {
+      HeaderComponent.updateCartBadge();
+    }
   }
 };
+
+window.CartService = CartService;

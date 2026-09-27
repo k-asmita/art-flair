@@ -294,3 +294,31 @@
   color: var(--color-text-main);
   font-size: var(--font-size-sm);
 }
+
+/* Related & Recommended Supplies Showcase Grid */
+.products-showcase-grid,
+.recommendations-grid,
+#related-products-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--space-lg);
+  width: 100%;
+  margin-top: var(--space-lg);
+}
+
+@media (max-width: 1024px) {
+  .products-showcase-grid,
+  .recommendations-grid,
+  #related-products-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .products-showcase-grid,
+  .recommendations-grid,
+  #related-products-grid {
+    grid-template-columns: 1fr;
+  }
+}
+

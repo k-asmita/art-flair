@@ -76,6 +76,38 @@ const CartDrawerComponent = {
         this.close();
       }
     });
+
+    // Delegated click listener on drawer for remove & steppers
+    this.drawerEl.addEventListener('click', async (e) => {
+      const removeBtn = e.target.closest('[data-action="cart-drawer-remove"]');
+      if (removeBtn) {
+        e.preventDefault();
+        e.stopPropagation();
+        const cartId = removeBtn.dataset.cartId;
+        await this.removeItem(cartId);
+        return;
+      }
+
+      const decBtn = e.target.closest('[data-action="cart-drawer-dec"]');
+      if (decBtn) {
+        e.preventDefault();
+        e.stopPropagation();
+        const cartId = decBtn.dataset.cartId;
+        const currentQty = parseInt(decBtn.dataset.qty, 10) || 1;
+        await this.changeQuantity(cartId, currentQty - 1);
+        return;
+      }
+
+      const incBtn = e.target.closest('[data-action="cart-drawer-inc"]');
+      if (incBtn) {
+        e.preventDefault();
+        e.stopPropagation();
+        const cartId = incBtn.dataset.cartId;
+        const currentQty = parseInt(incBtn.dataset.qty, 10) || 1;
+        await this.changeQuantity(cartId, currentQty + 1);
+        return;
+      }
+    });
   },
 
   async open() {
@@ -142,18 +174,23 @@ const CartDrawerComponent = {
       if (footerEl) footerEl.style.display = 'block';
 
       listEl.innerHTML = items.map(item => {
-        const rawImg = String(item.product_image || '').replace(/^\/+/, '');
-        const itemImg = rawImg ? `/static/images/${rawImg}` : (item.image || item.image_url);
-        const fallbackPath = `Products/${item.category_name || item.category || 'Accessories'}/${rawImg.split('/').pop()}`;
-        const itemTotal = (item.price * item.quantity).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        const rawImg = String(item.product_image || item.image || item.image_url || '').replace(/^\/+/, '');
+        const cat = item.category_name || item.category || 'Accessories';
+        const filename = rawImg.split('/').pop() || 'acrylic.jpg';
+        const fallbackPath = `Products/${cat}/${filename}`;
+        const itemImg = (typeof resolveProductImageUrl === 'function') 
+          ? resolveProductImageUrl(item) 
+          : (rawImg.startsWith('Products/') ? rawImg : `/static/images/${rawImg}`);
+        const itemId = item.cartItemId || item.cart_id || item.productId || item.product_id || item.id;
+        const itemPrice = Number(item.price || 0);
 
         return `
-          <div class="cart-drawer-item" data-cart-id="${item.cartItemId || item.cart_id}">
+          <div class="cart-drawer-item" data-cart-id="${itemId}">
             <img 
               src="${itemImg}" 
-              alt="${item.name}" 
+              alt="${item.name || item.product_name}" 
               class="cart-drawer-item-img"
-              onerror="console.error('Cart image load failed:', this.src); this.onerror=null; this.src='${fallbackPath}';"
+              onerror="this.onerror=null; this.src='${fallbackPath}';"
             />
             <div class="cart-drawer-item-info">
               <a href="product-details.html?id=${item.productId || item.product_id || item.id}" class="cart-drawer-item-title">
@@ -163,17 +200,19 @@ const CartDrawerComponent = {
                 ${item.brand || 'Artisan'} • ${item.category || 'Fine Art'}
               </div>
               <div class="cart-drawer-item-price">
-                ₹${item.price.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                ₹${itemPrice.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
               </div>
             </div>
             <div class="cart-drawer-item-actions">
               <button 
                 type="button" 
                 class="cart-drawer-remove-btn" 
-                onclick="CartDrawerComponent.removeItem('${item.cartItemId || item.cart_id}')"
+                data-action="cart-drawer-remove"
+                data-cart-id="${itemId}"
                 title="Remove Item"
+                aria-label="Remove item"
               >
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <path d="M3 6h18m-2 0v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6m3 0V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/>
                 </svg>
               </button>
@@ -181,13 +220,17 @@ const CartDrawerComponent = {
                 <button 
                   type="button" 
                   class="cart-drawer-stepper-btn" 
-                  onclick="CartDrawerComponent.changeQuantity('${item.cartItemId || item.cart_id}', ${item.quantity - 1})"
+                  data-action="cart-drawer-dec"
+                  data-cart-id="${itemId}"
+                  data-qty="${item.quantity}"
                 >-</button>
                 <span class="cart-drawer-stepper-val">${item.quantity}</span>
                 <button 
                   type="button" 
                   class="cart-drawer-stepper-btn" 
-                  onclick="CartDrawerComponent.changeQuantity('${item.cartItemId || item.cart_id}', ${item.quantity + 1})"
+                  data-action="cart-drawer-inc"
+                  data-cart-id="${itemId}"
+                  data-qty="${item.quantity}"
                 >+</button>
               </div>
             </div>
@@ -202,25 +245,39 @@ const CartDrawerComponent = {
   },
 
   async changeQuantity(cartItemId, newQty) {
+    if (!cartItemId) return;
     if (newQty <= 0) {
       return this.removeItem(cartItemId);
     }
     try {
       await CartService.updateQuantity(cartItemId, newQty);
       await this.renderItems();
-      HeaderComponent.updateCartBadge();
+      if (typeof HeaderComponent !== 'undefined' && typeof HeaderComponent.updateCartBadge === 'function') {
+        HeaderComponent.updateCartBadge();
+      }
+      if (typeof CartPage !== 'undefined' && typeof CartPage.renderCart === 'function') {
+        CartPage.renderCart();
+      }
     } catch (e) {
+      console.error('[CartDrawerComponent] Error updating quantity:', e);
       Toast.error('Could not update quantity');
     }
   },
 
   async removeItem(cartItemId) {
+    if (!cartItemId) return;
     try {
-      await CartService.removeFromCart(cartItemId);
+      await CartService.removeItem(cartItemId);
       Toast.info('Item removed from cart');
       await this.renderItems();
-      HeaderComponent.updateCartBadge();
+      if (typeof HeaderComponent !== 'undefined' && typeof HeaderComponent.updateCartBadge === 'function') {
+        HeaderComponent.updateCartBadge();
+      }
+      if (typeof CartPage !== 'undefined' && typeof CartPage.renderCart === 'function') {
+        CartPage.renderCart();
+      }
     } catch (e) {
+      console.error('[CartDrawerComponent] Error removing item:', e);
       Toast.error('Could not remove item');
     }
   }
@@ -228,3 +285,4 @@ const CartDrawerComponent = {
 
 // Global accessor
 window.CartDrawerComponent = CartDrawerComponent;
+

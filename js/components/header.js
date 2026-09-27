@@ -132,7 +132,24 @@ const HeaderComponent = {
       </a>
     `).join('');
 
+    // Promotional Banner Constants from shared config
+    const promoConfig = (typeof API_CONFIG !== 'undefined' && API_CONFIG.PROMO) ? API_CONFIG.PROMO : { FEATURED_CODE: 'SABAHZ10', DISCOUNT_PERCENT: 10 };
+    const promoCode = promoConfig.FEATURED_CODE || 'SABAHZ10';
+    const promoPercent = promoConfig.DISCOUNT_PERCENT || 10;
+    const isAnnouncementDismissed = sessionStorage.getItem('artflair_announcement_dismissed') === 'true';
+
     headerContainer.innerHTML = `
+      <!-- Top Promotional Announcement Bar -->
+      <div class="top-announcement-bar ${isAnnouncementDismissed ? 'is-hidden' : ''}" id="top-announcement-bar" role="region" aria-label="Special Promotion">
+        <div class="container announcement-content">
+          <div class="announcement-text">
+            <span>🎉</span>
+            <span>Use code <strong class="announcement-code-pill" title="Click to copy code" data-copy-code="${promoCode}">${promoCode}</strong> for ${promoPercent}% off your first order!</span>
+          </div>
+          <button type="button" class="announcement-close-btn" id="btn-close-announcement" aria-label="Dismiss Announcement">✕</button>
+        </div>
+      </div>
+
       <!-- Main Header -->
       <header class="site-header" id="main-header">
         <div class="container">
@@ -179,9 +196,6 @@ const HeaderComponent = {
             <div class="header-actions">
               <!-- AI Matcher Pill -->
               <a href="ai-matcher.html" class="btn-ai-matcher-pill" title="Launch AI Medium & Supplies Matcher">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3Z"/>
-                </svg>
                 AI Advisor
               </a>
 
@@ -258,7 +272,7 @@ const HeaderComponent = {
               </li>
               <li class="nav-item">
                 <a href="ai-matcher.html" class="nav-link highlight ${isAiMatcher ? 'active' : ''}">
-                  ✨ AI Advisor
+                  AI Advisor
                 </a>
               </li>
             </ul>
@@ -306,7 +320,7 @@ const HeaderComponent = {
             </div>
 
             <a href="ai-matcher.html" class="mobile-nav-link ${isAiMatcher ? 'active' : ''}" style="color: var(--color-primary); font-weight: 700;">
-              <span>✨ AI Medium Matcher</span>
+              <span>AI Medium Matcher</span>
             </a>
             <a href="wishlist.html" class="mobile-nav-link">
               <span>❤️ Saved Wishlist</span>
@@ -346,6 +360,39 @@ const HeaderComponent = {
   },
 
   _bindEvents() {
+    // Top Announcement Bar Dismissal
+    const announcementBar = document.getElementById('top-announcement-bar');
+    const closeAnnouncementBtn = document.getElementById('btn-close-announcement');
+    closeAnnouncementBtn?.addEventListener('click', () => {
+      announcementBar?.classList.add('is-hidden');
+      try {
+        sessionStorage.setItem('artflair_announcement_dismissed', 'true');
+      } catch (e) {}
+    });
+
+    // Copy Promo Code on Click
+    document.addEventListener('click', (e) => {
+      const copyPill = e.target.closest('[data-copy-code]');
+      if (copyPill) {
+        const codeToCopy = copyPill.dataset.copyCode;
+        if (codeToCopy) {
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(codeToCopy).then(() => {
+              if (typeof Toast !== 'undefined') {
+                Toast.success(`Promo code "${codeToCopy}" copied!`);
+              }
+            }).catch(() => {
+              if (typeof Toast !== 'undefined') {
+                Toast.info(`Promo code: ${codeToCopy}`);
+              }
+            });
+          } else if (typeof Toast !== 'undefined') {
+            Toast.info(`Promo code: ${codeToCopy}`);
+          }
+        }
+      }
+    });
+
     // Header background elevation on scroll
     const header = document.getElementById('main-header');
     window.addEventListener('scroll', () => {

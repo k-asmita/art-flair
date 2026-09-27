@@ -137,7 +137,7 @@ async function registerUser({ name, email, password, confirmPassword }) {
 }
 
 /**
- * Log out user, clear token, and update UI
+ * Log out user, clear token, and isolate all user data
  * @returns {Promise<Object>}
  */
 async function logoutUser() {
@@ -148,14 +148,83 @@ async function logoutUser() {
       // Non-blocking
     }
 
-    StorageUtil.setAuthToken(null);
-    StorageUtil.setUserInfo(null);
+    if (typeof StorageUtil !== 'undefined') {
+      StorageUtil.clearUserSession();
+    } else {
+      localStorage.clear();
+      sessionStorage.clear();
+    }
 
     window.dispatchEvent(new CustomEvent('auth:changed', { detail: null }));
     return { success: true };
   } catch (error) {
     console.error('[auth.js] logoutUser error:', error);
+    if (typeof StorageUtil !== 'undefined') StorageUtil.clearUserSession();
     return { success: true };
+  }
+}
+
+/**
+ * Request password recovery code / link
+ * @param {string} email
+ * @returns {Promise<Object>}
+ */
+async function forgotPassword(email) {
+  if (!email || !email.trim()) {
+    throw new Error('Please enter your registered studio email address.');
+  }
+
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(email.trim()) && !email.includes('@')) {
+    throw new Error('Please enter a valid studio email address.');
+  }
+
+  try {
+    const endpoint = (API_CONFIG.ENDPOINTS && API_CONFIG.ENDPOINTS.FORGOT_PASSWORD) || '/auth/forgot-password';
+    const response = await ApiClient.post(endpoint, {
+      email: email.trim().toLowerCase()
+    });
+
+    if (response && response.success) {
+      return response;
+    }
+    throw new Error(response?.message || 'Could not process password recovery. Please verify your email.');
+  } catch (error) {
+    console.error('[auth.js] forgotPassword error:', error);
+    throw error;
+  }
+}
+
+/**
+ * Reset password with new password
+ * @param {Object} data { email, newPassword, resetCode }
+ * @returns {Promise<Object>}
+ */
+async function resetPassword({ email, newPassword, resetCode }) {
+  if (!email || !email.trim()) {
+    throw new Error('Please enter your studio email address.');
+  }
+
+  if (!newPassword || newPassword.length < 8) {
+    throw new Error('New password must contain at least 8 characters.');
+  }
+
+  try {
+    const endpoint = (API_CONFIG.ENDPOINTS && API_CONFIG.ENDPOINTS.RESET_PASSWORD) || '/auth/reset-password';
+    const response = await ApiClient.post(endpoint, {
+      email: email.trim().toLowerCase(),
+      password: newPassword,
+      newPassword: newPassword,
+      resetCode
+    });
+
+    if (response && response.success) {
+      return response;
+    }
+    throw new Error(response?.message || 'Failed to reset password. Please try again.');
+  } catch (error) {
+    console.error('[auth.js] resetPassword error:', error);
+    throw error;
   }
 }
 
@@ -165,11 +234,16 @@ window.getCurrentUser = getCurrentUser;
 window.loginUser = loginUser;
 window.registerUser = registerUser;
 window.logoutUser = logoutUser;
+window.forgotPassword = forgotPassword;
+window.resetPassword = resetPassword;
 
 window.AuthService = {
   login: (email, password, rememberMe) => loginUser({ email, password, rememberMe }),
   register: (data) => registerUser(data),
   logout: () => logoutUser(),
   getCurrentUser: () => getCurrentUser(),
-  isAuthenticated: () => isAuthenticated()
+  isAuthenticated: () => isAuthenticated(),
+  forgotPassword: (email) => forgotPassword(email),
+  resetPassword: (data) => resetPassword(data)
 };
+

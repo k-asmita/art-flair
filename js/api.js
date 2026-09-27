@@ -2573,20 +2573,20 @@ const ApiClient = {
 
     // 7b. GET /recommendations/user (Personalized for Authenticated Patron vs Cold-Start for New Users)
     if (path === API_CONFIG.ENDPOINTS.AI_RECOMMENDATIONS_USER && method === 'GET') {
-      const user = StorageUtil.getUser();
-      const isAuthenticated = user && !user.isGuest;
-      const history = StorageUtil.getHistory() || [];
+      const user = typeof StorageUtil !== 'undefined' ? StorageUtil.getUserInfo() : null;
+      const isAuthenticated = user && !user.isGuest && user.email;
 
       // Check if user has sufficient browsing / purchase interaction history
-      if (isAuthenticated || history.length >= 2) {
+      if (isAuthenticated) {
         // ML Neural Collaborative Filtering Result
         const personalizedItems = MOCK_DATABASE_PRODUCTS.slice(0, 4);
         return {
           success: true,
           isPersonalized: true,
           hasSufficientData: true,
-          algorithm: 'Deep Matrix Factorization & Atelier Medium Affinity',
+          algorithm: 'Google Gemini & Hybrid TF-IDF Model',
           recommendations: personalizedItems,
+          products: personalizedItems,
           rationale: 'Personalized based on your atelier browsing history and archival pigment preferences.'
         };
       } else {
@@ -2598,6 +2598,7 @@ const ApiClient = {
           hasSufficientData: false,
           message: 'Explore more products to receive personalized recommendations.',
           recommendations: baselineItems,
+          products: baselineItems,
           rationale: 'Curated Studio Essentials (Popularity Baseline)'
         };
       }
@@ -2676,7 +2677,7 @@ const ApiClient = {
     if (path.startsWith('/cart/items/') && method === 'PUT') {
       const itemId = path.replace('/cart/items/', '');
       const body = JSON.parse(config.body || '{}');
-      const item = mockCart.find(i => i.cartItemId === itemId);
+      const item = mockCart.find(i => i.cartItemId === itemId || i.productId === itemId || i.id === itemId || i.product_id === itemId);
       if (item) {
         item.quantity = Math.max(1, body.quantity || 1);
         saveMockCart(mockCart);
@@ -2688,7 +2689,7 @@ const ApiClient = {
     // DELETE /cart/items/:id
     if (path.startsWith('/cart/items/') && method === 'DELETE') {
       const itemId = path.replace('/cart/items/', '');
-      mockCart = mockCart.filter(i => i.cartItemId !== itemId);
+      mockCart = mockCart.filter(i => i.cartItemId !== itemId && i.productId !== itemId && i.id !== itemId && i.product_id !== itemId);
       saveMockCart(mockCart);
       return { success: true, message: 'Item removed', items: mockCart };
     }
@@ -2839,6 +2840,184 @@ const ApiClient = {
       };
     }
 
+    // 9b. AUTHENTICATION & PASSWORD RECOVERY EMULATION
+    let mockUsers = [];
+    try {
+      mockUsers = JSON.parse(localStorage.getItem('af_dev_mock_registered_users') || '[]');
+    } catch(e) {
+      mockUsers = [];
+    }
+
+    const saveMockUsers = (users) => {
+      localStorage.setItem('af_dev_mock_registered_users', JSON.stringify(users));
+    };
+
+    // POST /auth/login
+    if (path === API_CONFIG.ENDPOINTS.LOGIN && method === 'POST') {
+      const body = JSON.parse(config.body || '{}');
+      const email = (body.email || '').trim().toLowerCase();
+      const password = body.password || '';
+
+      // Check admin account
+      if (email === 'admin@gmail.com' && password === 'Admin@24') {
+        const adminUser = {
+          id: 'ADM001',
+          name: 'Sabahz Admin',
+          email: 'admin@gmail.com',
+          role: 'admin',
+          isGuest: false
+        };
+        return {
+          success: true,
+          token: 'mock_jwt_token_admin_' + Date.now(),
+          user: adminUser
+        };
+      }
+
+      // Check registered users
+      const foundUser = mockUsers.find(u => u.email.toLowerCase() === email);
+      if (foundUser) {
+        if (foundUser.password && foundUser.password !== password) {
+          return { success: false, message: 'Invalid studio email or password.' };
+        }
+        return {
+          success: true,
+          token: 'mock_jwt_token_' + Date.now(),
+          user: {
+            id: foundUser.id || 'USR' + Math.floor(100 + Math.random() * 900),
+            name: foundUser.name || email.split('@')[0],
+            email: foundUser.email,
+            role: 'customer',
+            isGuest: false
+          }
+        };
+      }
+
+      // Allow login for demo customer credentials
+      return {
+        success: true,
+        token: 'mock_jwt_token_' + Date.now(),
+        user: {
+          id: 'USR' + Math.floor(100 + Math.random() * 900),
+          name: email.split('@')[0],
+          email: email,
+          role: 'customer',
+          isGuest: false
+        }
+      };
+    }
+
+    // POST /auth/register
+    if (path === API_CONFIG.ENDPOINTS.REGISTER && method === 'POST') {
+      const body = JSON.parse(config.body || '{}');
+      const email = (body.email || '').trim().toLowerCase();
+      const name = body.name || email.split('@')[0];
+      const password = body.password || '';
+
+      if (email === 'admin@gmail.com') {
+        return { success: false, message: 'This email address is reserved for administration.' };
+      }
+
+      const existing = mockUsers.find(u => u.email.toLowerCase() === email);
+      if (!existing) {
+        mockUsers.push({
+          id: 'USR' + Math.floor(100 + Math.random() * 900),
+          name: name,
+          email: email,
+          password: password,
+          role: 'customer',
+          created_at: new Date().toISOString()
+        });
+        saveMockUsers(mockUsers);
+      }
+
+      const newUser = {
+        id: 'USR' + Math.floor(100 + Math.random() * 900),
+        name: name,
+        email: email,
+        role: 'customer',
+        isGuest: false
+      };
+
+      return {
+        success: true,
+        token: 'mock_jwt_token_' + Date.now(),
+        user: newUser,
+        message: 'Patron atelier account created successfully.'
+      };
+    }
+
+    // POST /auth/forgot-password
+    if (path === API_CONFIG.ENDPOINTS.FORGOT_PASSWORD && method === 'POST') {
+      const body = JSON.parse(config.body || '{}');
+      const email = (body.email || '').trim().toLowerCase();
+      return {
+        success: true,
+        message: `Password reset verification PIN sent to ${email}.`,
+        resetCode: '849201',
+        email: email
+      };
+    }
+
+    // POST /auth/reset-password
+    if (path === API_CONFIG.ENDPOINTS.RESET_PASSWORD && method === 'POST') {
+      const body = JSON.parse(config.body || '{}');
+      const email = (body.email || '').trim().toLowerCase();
+      const newPassword = body.password || body.newPassword || '';
+
+      const user = mockUsers.find(u => u.email.toLowerCase() === email);
+      if (user) {
+        user.password = newPassword;
+        saveMockUsers(mockUsers);
+      } else {
+        mockUsers.push({
+          id: 'USR' + Math.floor(100 + Math.random() * 900),
+          name: email.split('@')[0],
+          email: email,
+          password: newPassword,
+          role: 'customer'
+        });
+        saveMockUsers(mockUsers);
+      }
+
+      return {
+        success: true,
+        message: 'Your password has been successfully reset! You can now sign in with your new password.'
+      };
+    }
+
+    // POST /auth/logout
+    if (path === API_CONFIG.ENDPOINTS.LOGOUT && method === 'POST') {
+      return { success: true, message: 'Signed out of studio session.' };
+    }
+
+    // GET /auth/profile
+    if (path === API_CONFIG.ENDPOINTS.USER_PROFILE && method === 'GET') {
+      const user = StorageUtil.getUserInfo() || {
+        id: 'USR001',
+        name: 'Artist Patron',
+        email: 'artist@atelier.com',
+        role: 'customer'
+      };
+      return { success: true, user: user };
+    }
+
+    // PUT /auth/profile
+    if (path === API_CONFIG.ENDPOINTS.UPDATE_PROFILE && method === 'PUT') {
+      const body = JSON.parse(config.body || '{}');
+      const current = StorageUtil.getUserInfo() || {};
+      const updated = {
+        ...current,
+        name: body.name || body.firstName || current.name,
+        firstName: body.firstName || current.firstName,
+        lastName: body.lastName || current.lastName,
+        phone: body.phone || current.phone,
+        email: body.email || current.email
+      };
+      StorageUtil.setUserInfo(updated);
+      return { success: true, message: 'Profile updated successfully', user: updated };
+    }
+
     // 10. DATABASE-DRIVEN ORDERS EMULATION IN INR
     let mockOrders = [];
     try {
@@ -2926,21 +3105,34 @@ const ApiClient = {
       mockOrders = [];
     }
 
-    // GET /orders
+    // GET /orders (Strictly isolated by current user email)
     if (path === API_CONFIG.ENDPOINTS.GET_ORDERS && method === 'GET') {
+      const currentUser = typeof StorageUtil !== 'undefined' ? StorageUtil.getUserInfo() : null;
+      const userEmail = (currentUser?.email || '').toLowerCase().trim();
+      
+      const userOrders = userEmail 
+        ? mockOrders.filter(o => (o.customer?.email || '').toLowerCase().trim() === userEmail)
+        : [];
+
       return {
         success: true,
-        count: mockOrders.length,
-        orders: mockOrders
+        count: userOrders.length,
+        orders: userOrders
       };
     }
 
     // GET /orders/:id
     if (path.startsWith('/orders/') && method === 'GET' && !path.includes('checkout')) {
       const orderId = path.replace('/orders/', '');
+      const currentUser = typeof StorageUtil !== 'undefined' ? StorageUtil.getUserInfo() : null;
+      const userEmail = (currentUser?.email || '').toLowerCase().trim();
+
       const order = mockOrders.find(o => o.orderId === orderId);
       if (order) {
-        return { success: true, order };
+        // Enforce user privacy
+        if (!userEmail || (order.customer?.email || '').toLowerCase().trim() === userEmail || currentUser?.role === 'admin') {
+          return { success: true, order };
+        }
       }
       return { success: false, message: 'Order reference not found' };
     }
@@ -3103,25 +3295,36 @@ const ApiClient = {
       };
     }
 
-    // 11. PROFILE ENDPOINTS
+    // 11. PROFILE ENDPOINTS (User-Scoped Isolation)
     // GET /auth/profile
     if (path === API_CONFIG.ENDPOINTS.USER_PROFILE && method === 'GET') {
+      const currentUser = typeof StorageUtil !== 'undefined' ? StorageUtil.getUserInfo() : null;
+      const userEmail = (currentUser?.email || '').toLowerCase().trim();
+
+      if (!userEmail) {
+        return {
+          success: false,
+          message: 'No authenticated patron profile found'
+        };
+      }
+
+      const storageKey = 'af_profile_' + userEmail.replace(/[^a-z0-9]/g, '_');
       let profile = {
-        name: 'Aarav Sharma',
-        email: 'aarav.art@studio.com',
-        phone: '+91 98765 43210',
-        address: 'Lotus Fine Arts Studio, 402 MG Road',
-        city: 'Mumbai',
-        state: 'Maharashtra',
-        postalCode: '400001',
+        name: currentUser.name || userEmail.split('@')[0],
+        email: userEmail,
+        phone: currentUser.phone || '',
+        address: '',
+        city: '',
+        state: '',
+        postalCode: '',
         country: 'India',
-        memberSince: '2025-11-10',
-        artDiscipline: 'Oil Realism & Watercolors',
-        tier: 'Sabahz Master Atelier Patron'
+        memberSince: currentUser.joinedDate || new Date().toISOString().split('T')[0],
+        artDiscipline: currentUser.discipline || 'Fine Arts & Mixed Media',
+        tier: 'Sabahz Atelier Patron'
       };
 
       try {
-        const saved = JSON.parse(localStorage.getItem('af_dev_mock_profile') || 'null');
+        const saved = JSON.parse(localStorage.getItem(storageKey) || 'null');
         if (saved) profile = { ...profile, ...saved };
       } catch(e) {}
 
@@ -3133,18 +3336,31 @@ const ApiClient = {
 
     // PUT /auth/profile
     if (path === API_CONFIG.ENDPOINTS.UPDATE_PROFILE && method === 'PUT') {
+      const currentUser = typeof StorageUtil !== 'undefined' ? StorageUtil.getUserInfo() : null;
+      const userEmail = (currentUser?.email || '').toLowerCase().trim();
       const body = JSON.parse(config.body || '{}');
+
+      if (!userEmail) {
+        return {
+          success: false,
+          message: 'Cannot update profile: no active user session'
+        };
+      }
+
+      const storageKey = 'af_profile_' + userEmail.replace(/[^a-z0-9]/g, '_');
       let current = {};
       try {
-        current = JSON.parse(localStorage.getItem('af_dev_mock_profile') || '{}');
+        current = JSON.parse(localStorage.getItem(storageKey) || '{}');
       } catch(e) {}
 
-      const updated = { ...current, ...body };
-      localStorage.setItem('af_dev_mock_profile', JSON.stringify(updated));
+      const updated = { ...current, ...body, email: userEmail };
+      localStorage.setItem(storageKey, JSON.stringify(updated));
 
       // Also sync currentUser in storage
-      const user = StorageUtil.getUser() || {};
-      StorageUtil.setUser({ ...user, name: updated.name || user.name, email: updated.email || user.email });
+      if (typeof StorageUtil !== 'undefined') {
+        const user = StorageUtil.getUserInfo() || {};
+        StorageUtil.setUserInfo({ ...user, name: updated.name || user.name, phone: updated.phone || user.phone });
+      }
 
       return {
         success: true,

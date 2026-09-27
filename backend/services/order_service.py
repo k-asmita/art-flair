@@ -84,8 +84,26 @@ class OrderService:
             # 2. Authoritative Total Calculation in INR
             free_threshold = Config.FREE_SHIPPING_THRESHOLD
             shipping_fee = 0.0 if subtotal >= free_threshold else 150.0
-            tax_amount = round(subtotal * Config.TAX_RATE, 2)
-            grand_total = round(subtotal + shipping_fee + tax_amount, 2)
+            
+            # Verify and apply promotional discount
+            promo_code = str(data.get('clientPromoCode') or '').strip().upper()
+            client_discount = float(data.get('clientDiscount', 0) or 0)
+            discount_amount = 0.0
+            
+            if promo_code in ['SABAHZ10', 'SABAHZ', 'SAVE10', 'WELCOME10', 'STUDIO10', 'FLAIR10', 'FIRSTORDER', 'NEWUSER']:
+                discount_amount = round(subtotal * 0.10, 2)
+            elif promo_code in ['ARTIST15', 'ARTIST', 'SAVE15', 'STUDIO15', 'SABAHZ15', 'CREATIVE15']:
+                discount_amount = round(subtotal * 0.15, 2)
+            elif promo_code in ['MASTER20', 'FLAIR20', 'SAVE20', 'STUDIO20', 'SABAHZ20', 'VIP20']:
+                discount_amount = round(subtotal * 0.20, 2)
+            elif promo_code in ['ARTFLAIR50']:
+                discount_amount = round(subtotal * 0.50, 2)
+            elif client_discount > 0:
+                discount_amount = min(client_discount, subtotal)
+
+            taxable_subtotal = max(0.0, subtotal - discount_amount)
+            tax_amount = round(taxable_subtotal * Config.TAX_RATE, 2)
+            grand_total = round(taxable_subtotal + shipping_fee + tax_amount, 2)
 
             # 3. Insert Order Record
             cur.execute("""

@@ -12,10 +12,100 @@
 const CartPage = {
   activePromoDiscount: 0,
   activePromoCode: '',
+  activePromoLabel: '',
 
   async init() {
+    this._restorePromoState();
     this._bindEvents();
     await this.renderCart();
+  },
+
+  _restorePromoState() {
+    try {
+      const saved = sessionStorage.getItem('artflair_promo');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (parsed && parsed.code && parsed.discount > 0) {
+          this.activePromoCode = parsed.code;
+          this.activePromoDiscount = parsed.discount;
+          this.activePromoLabel = parsed.label || `${Math.round(parsed.discount * 100)}% Off`;
+        }
+      }
+    } catch (e) {
+      console.warn('[CartPage] Failed to restore promo code from session:', e);
+    }
+  },
+
+  applyPromoCode(rawCode) {
+    const code = String(rawCode || '').trim().toUpperCase();
+    if (!code) {
+      Toast.error('Please enter a promotional code.');
+      return;
+    }
+
+    const featuredCode = (typeof API_CONFIG !== 'undefined' && API_CONFIG.PROMO?.FEATURED_CODE) ? API_CONFIG.PROMO.FEATURED_CODE.toUpperCase() : 'SABAHZ10';
+    const featuredRate = (typeof API_CONFIG !== 'undefined' && API_CONFIG.PROMO?.DISCOUNT_RATE) ? API_CONFIG.PROMO.DISCOUNT_RATE : 0.10;
+    const featuredPercent = (typeof API_CONFIG !== 'undefined' && API_CONFIG.PROMO?.DISCOUNT_PERCENT) ? API_CONFIG.PROMO.DISCOUNT_PERCENT : Math.round(featuredRate * 100);
+
+    // Supported promo codes map
+    const promoMap = {
+      [featuredCode]: { discount: featuredRate, label: `${featuredPercent}% Off` },
+      'SABAHZ10': { discount: 0.10, label: '10% Off' },
+      'SABAHZ': { discount: 0.10, label: '10% Off' },
+      'SAVE10': { discount: 0.10, label: '10% Off' },
+      'WELCOME10': { discount: 0.10, label: '10% Off' },
+      'STUDIO10': { discount: 0.10, label: '10% Off' },
+      'FLAIR10': { discount: 0.10, label: '10% Off' },
+      'FIRSTORDER': { discount: 0.10, label: '10% Off' },
+      'NEWUSER': { discount: 0.10, label: '10% Off' },
+      
+      'ARTIST15': { discount: 0.15, label: '15% Off' },
+      'ARTIST': { discount: 0.15, label: '15% Off' },
+      'SAVE15': { discount: 0.15, label: '15% Off' },
+      'STUDIO15': { discount: 0.15, label: '15% Off' },
+      'SABAHZ15': { discount: 0.15, label: '15% Off' },
+      'CREATIVE15': { discount: 0.15, label: '15% Off' },
+      
+      'MASTER20': { discount: 0.20, label: '20% Off' },
+      'FLAIR20': { discount: 0.20, label: '20% Off' },
+      'SAVE20': { discount: 0.20, label: '20% Off' },
+      'STUDIO20': { discount: 0.20, label: '20% Off' },
+      'SABAHZ20': { discount: 0.20, label: '20% Off' },
+      'VIP20': { discount: 0.20, label: '20% Off' },
+      
+      'ARTFLAIR50': { discount: 0.50, label: '50% Off' }
+    };
+
+    if (promoMap[code]) {
+      const match = promoMap[code];
+      this.activePromoDiscount = match.discount;
+      this.activePromoCode = code;
+      this.activePromoLabel = match.label;
+
+      try {
+        sessionStorage.setItem('artflair_promo', JSON.stringify({
+          code: code,
+          discount: match.discount,
+          label: match.label
+        }));
+      } catch (e) {}
+
+      Toast.success(`Promo code ${code} applied: ${match.label}!`);
+      this.renderCart();
+    } else {
+      Toast.error(`Invalid promo code "${code}". Try "SABAHZ10", "ARTIST15", or "MASTER20".`);
+    }
+  },
+
+  removePromoCode() {
+    this.activePromoDiscount = 0;
+    this.activePromoCode = '';
+    this.activePromoLabel = '';
+    try {
+      sessionStorage.removeItem('artflair_promo');
+    } catch (e) {}
+    Toast.info('Promotional code removed.');
+    this.renderCart();
   },
 
   async renderCart() {
@@ -231,7 +321,7 @@ const CartPage = {
 
             ${discountAmount > 0 ? `
               <div class="summary-row" style="color: var(--success); font-weight: 700;">
-                <span>Atelier Promo Discount (${this.activePromoCode})</span>
+                <span>Atelier Promo (${this.activePromoCode})</span>
                 <span>-₹${discountAmount.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
               </div>
             ` : ''}
@@ -251,25 +341,43 @@ const CartPage = {
               <span class="total-amount">₹${grandTotal.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
             </div>
 
-            <!-- Promo Code Form -->
-            <form id="promo-code-form" class="promo-box">
-              <input 
-                type="text" 
-                id="promo-input" 
-                class="form-control promo-input" 
-                placeholder="Promo code (e.g. SABAHZ10)" 
-                value="${this.activePromoCode}"
-                ${this.activePromoDiscount > 0 ? 'disabled' : ''}
-              />
-              <button 
-                type="submit" 
-                class="btn btn-outline" 
-                id="btn-apply-promo"
-                ${this.activePromoDiscount > 0 ? 'disabled' : ''}
-              >
-                ${this.activePromoDiscount > 0 ? 'Applied' : 'Apply'}
-              </button>
-            </form>
+            <!-- Promo Code Section -->
+            ${this.activePromoDiscount > 0 ? `
+              <div class="promo-applied-badge">
+                <div style="display: flex; align-items: center; gap: 8px;">
+                  <span style="font-size: 1.1rem;">🏷️</span>
+                  <div>
+                    <strong style="color: var(--success); font-size: 0.88rem;">${this.activePromoCode} (${this.activePromoLabel || (Math.round(this.activePromoDiscount * 100) + '% Off')})</strong>
+                    <div style="font-size: 0.72rem; color: var(--text-secondary);">Discount applied to order</div>
+                  </div>
+                </div>
+                <button type="button" class="btn-ghost btn-sm" id="btn-remove-promo" data-action="remove-promo" style="color: var(--error); font-weight: 600; font-size: 0.78rem; padding: 4px 8px; border-radius: 6px; cursor: pointer;">
+                  Remove
+                </button>
+              </div>
+            ` : `
+              <div class="cart-promo-hint">
+                <span>💡 Have a code? Try <strong class="cart-promo-pill" role="button" tabindex="0" title="Click to apply ${(typeof API_CONFIG !== 'undefined' && API_CONFIG.PROMO?.FEATURED_CODE) || 'SABAHZ10'}" data-apply-code="${(typeof API_CONFIG !== 'undefined' && API_CONFIG.PROMO?.FEATURED_CODE) || 'SABAHZ10'}">${(typeof API_CONFIG !== 'undefined' && API_CONFIG.PROMO?.FEATURED_CODE) || 'SABAHZ10'}</strong> for ${(typeof API_CONFIG !== 'undefined' && API_CONFIG.PROMO?.DISCOUNT_PERCENT) || 10}% off!</span>
+              </div>
+              <form id="promo-code-form" class="promo-box" onsubmit="return false;">
+                <input 
+                  type="text" 
+                  id="promo-input" 
+                  class="form-control promo-input" 
+                  placeholder="Promo code (e.g. ${(typeof API_CONFIG !== 'undefined' && API_CONFIG.PROMO?.FEATURED_CODE) || 'SABAHZ10'})" 
+                  autocomplete="off"
+                />
+                <button 
+                  type="button" 
+                  class="btn btn-outline" 
+                  id="btn-apply-promo"
+                  data-action="apply-promo"
+                  style="min-width: 72px;"
+                >
+                  Apply
+                </button>
+              </form>
+            `}
 
             <a href="checkout.html" class="btn btn-primary btn-block btn-lg" id="btn-proceed-checkout" style="font-size: 1.05rem;">
               Proceed to Secure Checkout →
@@ -419,15 +527,47 @@ const CartPage = {
             Toast.info('Studio cart cleared.');
             this.activePromoDiscount = 0;
             this.activePromoCode = '';
+            this.activePromoLabel = '';
+            try { sessionStorage.removeItem('artflair_promo'); } catch (e) {}
             await this.renderCart();
           } catch (err) {
             Toast.error(err.message || 'Could not clear cart');
           }
         }
       }
+
+      // 5. Apply Promo Code Pill Click (from hint)
+      const applyCodePill = e.target.closest('[data-apply-code]');
+      if (applyCodePill) {
+        e.preventDefault();
+        const code = applyCodePill.dataset.applyCode;
+        if (code) {
+          const input = document.getElementById('promo-input');
+          if (input) input.value = code;
+          this.applyPromoCode(code);
+        }
+        return;
+      }
+
+      // 6. Apply Promo Code Button Click
+      const applyPromoBtn = e.target.closest('[data-action="apply-promo"]') || (e.target.id === 'btn-apply-promo' ? e.target : null);
+      if (applyPromoBtn) {
+        e.preventDefault();
+        const input = document.getElementById('promo-input');
+        this.applyPromoCode(input?.value);
+        return;
+      }
+
+      // 7. Remove Promo Code Button Click
+      const removePromoBtn = e.target.closest('[data-action="remove-promo"]') || (e.target.id === 'btn-remove-promo' ? e.target : null);
+      if (removePromoBtn) {
+        e.preventDefault();
+        this.removePromoCode();
+        return;
+      }
     });
 
-    // 5. Manual Quantity Input Changes
+    // Manual Quantity Input Changes
     document.addEventListener('change', async (e) => {
       if (e.target.classList.contains('cart-qty-input')) {
         const cartId = e.target.dataset.cartId;
@@ -455,31 +595,19 @@ const CartPage = {
       }
     });
 
-    // 6. Promo Code Submission
+    // Promo Code Form Submit / Enter Key
     document.addEventListener('submit', (e) => {
       if (e.target.id === 'promo-code-form') {
         e.preventDefault();
         const input = document.getElementById('promo-input');
-        const code = input?.value.trim().toUpperCase();
+        this.applyPromoCode(input?.value);
+      }
+    });
 
-        if (!code) {
-          Toast.error('Please enter a promotional code.');
-          return;
-        }
-
-        if (code === 'SABAHZ10') {
-          this.activePromoDiscount = 0.10;
-          this.activePromoCode = 'SABAHZ10 (10% Off)';
-          Toast.success('Promo code SABAHZ10 applied: 10% discount!');
-          this.renderCart();
-        } else if (code === 'ARTIST15') {
-          this.activePromoDiscount = 0.15;
-          this.activePromoCode = 'ARTIST15 (15% Off)';
-          Toast.success('Promo code ARTIST15 applied: 15% discount!');
-          this.renderCart();
-        } else {
-          Toast.error('Invalid promotional code. Try "SABAHZ10" or "ARTIST15".');
-        }
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && e.target.id === 'promo-input') {
+        e.preventDefault();
+        this.applyPromoCode(e.target.value);
       }
     });
   }

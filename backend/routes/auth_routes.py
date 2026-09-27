@@ -68,3 +68,37 @@ def update_profile():
     data = request.get_json() or {}
     updated = AuthService.update_profile(user_id, data)
     return api_response({"user": updated}, message="Studio profile updated successfully.")
+
+
+@auth_bp.route('/forgot-password', methods=['POST'])
+def forgot_password():
+    data = request.get_json() or {}
+    email = data.get('email')
+    if not email:
+        return error_response("Please enter your registered studio email.", status_code=400)
+
+    result, err = AuthService.forgot_password(email)
+    if err:
+        return error_response(err, status_code=400)
+
+    return api_response(result, message="Password recovery code issued.")
+
+
+@auth_bp.route('/reset-password', methods=['POST'])
+def reset_password():
+    data = request.get_json() or {}
+    email = data.get('email')
+    new_password = data.get('password') or data.get('newPassword')
+
+    if not email or not new_password:
+        return error_response("Email and new password are required.", status_code=400)
+
+    if len(new_password) < 8:
+        return error_response("Password must contain at least 8 characters.", status_code=400)
+
+    result, err = AuthService.reset_password(email, new_password)
+    if err:
+        return error_response(err, status_code=400)
+
+    return api_response(result, message="Password updated successfully.")
+
