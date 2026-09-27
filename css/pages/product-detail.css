@@ -176,6 +176,25 @@
   font-size: var(--font-size-base);
 }
 
+@media (max-width: 600px) {
+  .purchase-action-group {
+    gap: 10px;
+  }
+  .purchase-action-group .quantity-stepper {
+    flex: 1;
+  }
+  .btn-add-detail,
+  .btn-buy-now {
+    width: 100%;
+    min-width: 100%;
+    flex: 1 1 100%;
+    padding: 12px 18px;
+  }
+  .price-main-tag {
+    font-size: 1.75rem;
+  }
+}
+
 /* AI Art Supply Advisor Card (Pairs & Mediums) */
 .ai-advisor-card {
   background: linear-gradient(135deg, rgba(91, 44, 111, 0.05), rgba(233, 185, 73, 0.1));
@@ -235,6 +254,9 @@
   gap: var(--space-lg);
   border-bottom: 2px solid var(--color-border-light);
   margin-bottom: var(--space-xl);
+  overflow-x: auto;
+  white-space: nowrap;
+  -webkit-overflow-scrolling: touch;
 }
 
 .tab-nav-btn {
@@ -245,6 +267,7 @@
   padding-bottom: 12px;
   position: relative;
   transition: color var(--transition-fast);
+  flex-shrink: 0;
 }
 
 .tab-nav-btn.active {
@@ -277,6 +300,24 @@
 
 .specs-table tr {
   border-bottom: 1px solid var(--color-border-light);
+}
+
+@media (max-width: 480px) {
+  .specs-table tr {
+    display: flex;
+    flex-direction: column;
+    padding: 8px 0;
+  }
+  .specs-table th {
+    width: 100% !important;
+    padding: 4px 8px;
+    background: transparent !important;
+    color: var(--color-primary);
+    font-weight: 700;
+  }
+  .specs-table td {
+    padding: 2px 8px 6px 8px;
+  }
 }
 
 .specs-table th {

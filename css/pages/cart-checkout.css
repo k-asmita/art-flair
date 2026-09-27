@@ -77,6 +77,71 @@
   border-collapse: collapse;
 }
 
+@media (max-width: 768px) {
+  .cart-items-card {
+    padding: 14px 12px;
+  }
+  .cart-table thead {
+    display: none;
+  }
+  .cart-table,
+  .cart-table tbody,
+  .cart-item-row {
+    display: block;
+    width: 100%;
+  }
+  .cart-item-row {
+    padding: 14px 0;
+    border-bottom: 1px solid var(--border-light);
+    position: relative;
+  }
+  .cart-item-cell {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 6px 0;
+    width: 100%;
+  }
+  .cart-item-cell:first-child {
+    display: block;
+    padding-bottom: 8px;
+  }
+  .cart-product-info {
+    gap: 12px;
+    align-items: flex-start;
+  }
+  .cart-product-img {
+    width: 60px;
+    height: 60px;
+    min-width: 60px;
+  }
+  .cart-product-title {
+    font-size: 0.88rem;
+  }
+  .order-summary-card {
+    padding: 18px 14px;
+  }
+  .checkout-step-card {
+    padding: 18px 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .free-shipping-card {
+    padding: 12px 14px;
+  }
+  .shipping-progress-text {
+    font-size: 0.78rem;
+  }
+  .promo-box {
+    flex-direction: column;
+    gap: 8px;
+  }
+  .promo-box .btn {
+    width: 100%;
+  }
+}
+
 .cart-table th {
   text-align: left;
   font-size: var(--font-size-xs);
@@ -884,6 +949,48 @@
   .af-pay-tab.active {
     border-left: none;
     border-bottom: 3px solid #74348E;
+  }
+}
+
+@media (max-width: 480px) {
+  .payment-options-grid {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+  .payment-option-card {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 14px;
+    text-align: left;
+  }
+  .payment-icon {
+    font-size: 1.3rem;
+    margin-bottom: 0;
+  }
+  .af-payment-modal-backdrop {
+    padding: 8px;
+  }
+  .af-payment-modal-card {
+    border-radius: 14px;
+    min-height: auto;
+    max-height: 94vh;
+  }
+  .af-payment-sidebar {
+    padding: 18px 16px;
+  }
+  .af-payment-price-card {
+    padding: 12px 14px;
+  }
+  .af-payment-price-val {
+    font-size: 1.4rem;
+  }
+  .af-pay-content-panel {
+    padding: 16px 14px;
+  }
+  .af-pay-confirm-btn {
+    padding: 12px 16px;
+    font-size: 0.9rem;
   }
 }
 

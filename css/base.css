@@ -147,12 +147,28 @@ code {
   padding-right: var(--space-lg);
 }
 
+@media (max-width: 768px) {
+  .container {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .container {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+}
+
 .container-narrow {
   max-width: var(--container-narrow-width);
 }
 
 .main-content {
   flex: 1 0 auto;
+  width: 100%;
+  overflow-x: hidden;
 }
 
 .section-padding {
@@ -164,6 +180,13 @@ code {
   .section-padding {
     padding-top: var(--space-2xl);
     padding-bottom: var(--space-2xl);
+  }
+}
+
+@media (max-width: 480px) {
+  .section-padding {
+    padding-top: var(--space-xl);
+    padding-bottom: var(--space-xl);
   }
 }
 

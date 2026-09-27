@@ -294,3 +294,60 @@
   color: var(--primary);
   margin-bottom: 4px;
 }
+
+@media (max-width: 768px) {
+  .profile-page-wrapper {
+    padding: var(--space-lg) 0 var(--space-2xl);
+  }
+  .profile-card,
+  .profile-sidebar-card,
+  .order-card {
+    padding: 18px 14px;
+    border-radius: var(--radius-lg);
+  }
+  .order-card-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  .order-card-footer {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+  .order-card-footer .btn {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .profile-avatar-large {
+    width: 64px;
+    height: 64px;
+    font-size: 1.5rem;
+  }
+  .profile-name {
+    font-size: 1.15rem;
+  }
+  .profile-email {
+    font-size: 0.75rem;
+  }
+  .profile-nav-btn {
+    padding: 8px 10px;
+    font-size: 0.85rem;
+    gap: 8px;
+  }
+  .order-item-row {
+    gap: 10px;
+  }
+  .order-item-thumb {
+    width: 42px;
+    height: 42px;
+  }
+  .order-item-name {
+    font-size: 0.85rem;
+  }
+  .order-item-qty {
+    font-size: 0.72rem;
+  }
+}
